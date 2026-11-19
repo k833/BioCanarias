@@ -17,15 +17,24 @@ export async function handler(event) {
     const model = 'gemini-3.8-flash';
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8500);
+
     const resp = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
       body: JSON.stringify({
         contents: [{ role: 'user', parts }],
-        generationConfig: { responseMimeType: 'application/json', temperature: 0.2 }
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.2,
+          maxOutputTokens: 700
+        }
       })
     });
 
+    clearTimeout(timeoutId);
     const text = await resp.text();
 
     if (resp.ok) {
@@ -36,13 +45,13 @@ export async function handler(event) {
       };
     }
 
-    let realMsg = `Error ${resp.status}: ${text.slice(0, 180)}`;
+    let realMsg = `Error ${resp.status}`;
     try {
       const parsed = JSON.parse(text);
       if (Array.isArray(parsed) && parsed[0]?.error?.message) {
-        realMsg = `(${resp.status}) ${parsed[0].error.message}`;
+        realMsg = parsed[0].error.message;
       } else if (parsed?.error?.message) {
-        realMsg = `(${resp.status}) ${parsed.error.message}`;
+        realMsg = parsed.error.message;
       }
     } catch {}
 
@@ -52,10 +61,13 @@ export async function handler(event) {
       body: JSON.stringify({ error: { message: realMsg } })
     };
   } catch (err) {
+    const msg = err.name === 'AbortError'
+      ? 'Google tardó demasiado en responder. Pulsa de nuevo en unos segundos.'
+      : err.message;
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: { message: err.message } })
+      body: JSON.stringify({ error: { message: msg } })
     };
   }
 }

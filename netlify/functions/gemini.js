@@ -9,12 +9,10 @@ export async function handler(event) {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        error: { message: 'Falta configurar GEMINI_API_KEY en las variables de entorno de Netlify.' }
+        error: { message: 'Falta configurar GEMINI_API_KEY en Netlify.' }
       })
     };
   }
-
-  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   try {
     const { parts } = JSON.parse(event.body);
@@ -23,56 +21,35 @@ export async function handler(event) {
       generationConfig: { responseMimeType: 'application/json', temperature: 0.2 }
     });
 
-    // Intenta el modelo principal y, si está saturado, pasa a los de respaldo
-    const models = ['gemini-3.8-flash', 'gemini-3.8-flash-lite', 'gemini-2.5-flash-lite'];
-    let lastResp = null;
+    const models = ['gemini-3.8-flash', 'gemini-3.8-flash-lite'];
+    let lastStatus = 500;
     let lastText = '';
 
     for (const model of models) {
-      const endpoints = apiKey.startsWith('AQ.')
-        ? [
-            `https://aiplatform.googleapis.com/v1/publishers/google/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
-            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`
-          ]
-        : [
-            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
-            `https://aiplatform.googleapis.com/v1/publishers/google/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`
-          ];
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload
+      });
+      const text = await resp.text();
 
-      for (const url of endpoints) {
-        for (let attempt = 0; attempt < 2; attempt++) {
-          const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: payload
-          });
-          const text = await resp.text();
-
-          if (resp.ok) {
-            return {
-              statusCode: 200,
-              headers: { 'Content-Type': 'application/json' },
-              body: text
-            };
-          }
-
-          lastResp = resp;
-          lastText = text;
-
-          // Si hay pico de demanda (503 o 429), espera 1.2 s y reintenta
-          if (resp.status === 503 || resp.status === 429) {
-            await sleep(1200);
-            continue;
-          }
-          break;
-        }
+      if (resp.ok) {
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: text
+        };
       }
+
+      lastStatus = resp.status;
+      lastText = text;
     }
 
     return {
-      statusCode: lastResp ? lastResp.status : 500,
+      statusCode: lastStatus,
       headers: { 'Content-Type': 'application/json' },
-      body: lastText || JSON.stringify({ error: { message: 'Servidores saturados temporalmente. Inténtalo en unos segundos.' } })
+      body: lastText || JSON.stringify({ error: { message: 'Sin respuesta de Gemini. Inténtalo de nuevo.' } })
     };
   } catch (err) {
     return {

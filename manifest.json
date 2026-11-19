@@ -1,7 +1,7 @@
 {
-  "name": "BioCanarias - Guía y Registro de Biodiversidad",
+  "name": "BioCanarias - Cuaderno y Almacén de Biodiversidad",
   "short_name": "BioCanarias",
-  "description": "Identifica flora y fauna terrestre y marina de Canarias por foto, sonido, descripción o quiz de rasgos.",
+  "description": "Cuaderno de campo personal para guardar fotos, audios, descripciones y ubicaciones de flora y fauna de Canarias.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

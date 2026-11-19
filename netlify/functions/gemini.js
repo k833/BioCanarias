@@ -16,7 +16,7 @@ export async function handler(event) {
 
   try {
     const { parts } = JSON.parse(event.body);
-    const model = 'gemini-2.5-flash';
+    const model = 'gemini-3.8-flash';
     const payload = JSON.stringify({
       contents: [{ role: 'user', parts }],
       generationConfig: { responseMimeType: 'application/json', temperature: 0.2 }

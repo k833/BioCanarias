@@ -8,48 +8,48 @@ export async function handler(event) {
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        error: { message: 'Falta configurar GEMINI_API_KEY en Netlify.' }
-      })
+      body: JSON.stringify({ error: { message: 'Falta configurar GEMINI_API_KEY en Netlify.' } })
     };
   }
 
   try {
     const { parts } = JSON.parse(event.body);
-    const payload = JSON.stringify({
-      contents: [{ role: 'user', parts }],
-      generationConfig: { responseMimeType: 'application/json', temperature: 0.2 }
+    const model = 'gemini-3.8-flash';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts }],
+        generationConfig: { responseMimeType: 'application/json', temperature: 0.2 }
+      })
     });
 
-    const models = ['gemini-3.8-flash', 'gemini-3.8-flash-lite'];
-    let lastStatus = 500;
-    let lastText = '';
+    const text = await resp.text();
 
-    for (const model of models) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
-      const resp = await fetch(url, {
-        method: 'POST',
+    if (resp.ok) {
+      return {
+        statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
-        body: payload
-      });
-      const text = await resp.text();
-
-      if (resp.ok) {
-        return {
-          statusCode: 200,
-          headers: { 'Content-Type': 'application/json' },
-          body: text
-        };
-      }
-
-      lastStatus = resp.status;
-      lastText = text;
+        body: text
+      };
     }
 
+    let realMsg = `Error ${resp.status}: ${text.slice(0, 180)}`;
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed) && parsed[0]?.error?.message) {
+        realMsg = `(${resp.status}) ${parsed[0].error.message}`;
+      } else if (parsed?.error?.message) {
+        realMsg = `(${resp.status}) ${parsed.error.message}`;
+      }
+    } catch {}
+
     return {
-      statusCode: lastStatus,
+      statusCode: resp.status,
       headers: { 'Content-Type': 'application/json' },
-      body: lastText || JSON.stringify({ error: { message: 'Sin respuesta de Gemini. Inténtalo de nuevo.' } })
+      body: JSON.stringify({ error: { message: realMsg } })
     };
   } catch (err) {
     return {

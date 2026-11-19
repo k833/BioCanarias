@@ -14,7 +14,7 @@ export async function handler(event) {
 
   try {
     const { parts } = JSON.parse(event.body);
-    const model = 'gemini-3.8-flash';
+    const model = 'gemini-3.8-flash-lite';
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
     const controller = new AbortController();

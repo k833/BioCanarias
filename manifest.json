@@ -1,0 +1,31 @@
+{
+  "name": "BioCanarias - Guía y Registro de Biodiversidad",
+  "short_name": "BioCanarias",
+  "description": "Identifica flora y fauna terrestre y marina de Canarias por foto, sonido, descripción o quiz de rasgos.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f3d2e",
+  "theme_color": "#0f3d2e",
+  "lang": "es-ES",
+  "categories": [
+    "education",
+    "lifestyle",
+    "navigation"
+  ],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

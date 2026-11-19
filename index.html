@@ -1060,3 +1060,227 @@ Ubicación: Isla de ${island}, zona: ${zone}. Fecha: ${month} (${season}).${feed
       const lng = parseFloat(document.getElementById('input-lng').value) || def[1];
       const date = document.getElementById('input-date').value;
       const zone = document.getElementById('input-zone').value.trim() || island;
+
+      const userPhoto = (currentMode === 'foto' && currentPhotoBase64) ? `data:${currentPhotoMime};base64,${currentPhotoBase64}` : null;
+      const record = {
+        id: Date.now(), ...lastResult, island, zone, lat, lng, date,
+        photo: userPhoto || lastRefPhotoUrl || null
+      };
+
+      speciesList.unshift(record);
+      localStorage.setItem(LS_SPECIES, JSON.stringify(speciesList));
+      showToast(`"${record.nombre_comun}" guardada en Mis Especies y Mapa`);
+    });
+
+    // Feedback
+    function addFeedback(text) {
+      if (!text.trim()) return;
+      feedbackList.unshift({ id: Date.now(), text: text.trim(), date: new Date().toLocaleDateString('es-ES') });
+      localStorage.setItem(LS_FEEDBACK, JSON.stringify(feedbackList));
+      renderFeedbackList();
+      showToast('Retroalimentación guardada');
+    }
+    document.getElementById('btn-quick-feedback').addEventListener('click', () => {
+      const inp = document.getElementById('input-quick-feedback'); addFeedback(inp.value); inp.value = '';
+    });
+    document.getElementById('btn-add-feedback').addEventListener('click', () => {
+      const inp = document.getElementById('input-new-feedback'); addFeedback(inp.value); inp.value = '';
+    });
+    function renderFeedbackList() {
+      const ul = document.getElementById('feedback-list');
+      if (!feedbackList.length) { ul.innerHTML = '<li class="text-slate-400 italic">Aún no has añadido notas locales.</li>'; return; }
+      ul.innerHTML = feedbackList.map(f => `
+        <li class="flex items-center justify-between gap-2 bg-slate-50 dark:bg-slate-800/70 px-3 py-2 rounded-xl">
+          <span>${f.text} <span class="text-slate-400 ml-1">(${f.date})</span></span>
+          <button onclick="deleteFeedback(${f.id})" class="text-rose-500 hover:text-rose-700 font-bold px-1">&times;</button>
+        </li>
+      `).join('');
+    }
+    window.deleteFeedback = (id) => {
+      feedbackList = feedbackList.filter(f => f.id !== id);
+      localStorage.setItem(LS_FEEDBACK, JSON.stringify(feedbackList));
+      renderFeedbackList();
+    };
+
+    // ================= MAPA =================
+    function initMap() {
+      if (map) return;
+      map = L.map('map').setView([28.35, -15.7], 7);
+      standardLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' });
+      satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '&copy; Esri' });
+      activeLayerName = settings.mapLayer;
+      if (activeLayerName === 'satellite') { satelliteLayer.addTo(map); document.getElementById('layer-label').textContent = 'Estándar'; }
+      else { standardLayer.addTo(map); document.getElementById('layer-label').textContent = 'Satélite'; }
+      markersGroup = L.layerGroup().addTo(map);
+    }
+
+    function renderMapMarkers() {
+      if (!markersGroup) return;
+      markersGroup.clearLayers();
+      const filtered = speciesList.filter(s => activeMapFilter === 'all' || (s.origen || '').includes(activeMapFilter));
+      filtered.forEach(s => {
+        const color = originColor(s.origen);
+        const marker = L.circleMarker([s.lat, s.lng], { radius: 9, fillColor: color, color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.9 });
+        const imgHtml = s.photo ? `<img src="${s.photo}" style="width:100%;max-height:110px;object-fit:cover;border-radius:8px;margin-bottom:6px;" />` : '';
+        marker.bindPopup(`
+          <div style="min-width:190px;font-family:sans-serif;">
+            ${imgHtml}
+            <strong style="font-size:13px;">${s.nombre_comun}</strong><br/>
+            <em style="font-size:11px;color:#64748b;">${s.nombre_cientifico}</em><br/>
+            <span style="font-size:11px;font-weight:bold;color:${color};">${s.origen}</span> · <span style="font-size:11px;">${s.habitat}</span><br/>
+            <span style="font-size:11px;">📍 ${s.zone} (${s.island})</span><br/>
+            <span style="font-size:11px;">📅 ${s.date}</span>
+          </div>
+        `);
+        marker.addTo(markersGroup);
+      });
+    }
+
+    document.getElementById('btn-toggle-layer').addEventListener('click', () => {
+      if (!map) return;
+      if (activeLayerName === 'standard') { map.removeLayer(standardLayer); satelliteLayer.addTo(map); activeLayerName = 'satellite'; document.getElementById('layer-label').textContent = 'Estándar'; }
+      else { map.removeLayer(satelliteLayer); standardLayer.addTo(map); activeLayerName = 'standard'; document.getElementById('layer-label').textContent = 'Satélite'; }
+    });
+
+    document.querySelectorAll('.map-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeMapFilter = btn.dataset.filter;
+        document.querySelectorAll('.map-filter-btn').forEach(b => {
+          const active = b.dataset.filter === activeMapFilter;
+          b.classList.toggle('bg-forest-900', active); b.classList.toggle('text-white', active);
+          b.classList.toggle('bg-white', !active); b.classList.toggle('dark:bg-slate-800', !active);
+        });
+        renderMapMarkers();
+      });
+    });
+
+    // ================= MIS ESPECIES =================
+    function renderSpeciesList() {
+      const q = document.getElementById('search-species').value.toLowerCase();
+      const fOrigin = document.getElementById('filter-origin').value;
+      const fIsland = document.getElementById('filter-island').value;
+
+      document.getElementById('stat-total').textContent = speciesList.length;
+      document.getElementById('stat-endemica').textContent = speciesList.filter(s => (s.origen || '').includes('Endémic')).length;
+      document.getElementById('stat-autoctona').textContent = speciesList.filter(s => (s.origen || '').includes('Autócton')).length;
+      document.getElementById('stat-invasora').textContent = speciesList.filter(s => (s.origen || '').includes('Invasor')).length;
+
+      const filtered = speciesList.filter(s => {
+        const matchQ = !q || (s.nombre_comun + ' ' + s.nombre_cientifico + ' ' + s.zone).toLowerCase().includes(q);
+        const matchO = !fOrigin || (s.origen || '').includes(fOrigin);
+        const matchI = !fIsland || s.island === fIsland;
+        return matchQ && matchO && matchI;
+      });
+
+      const container = document.getElementById('species-list');
+      if (!filtered.length) {
+        container.innerHTML = '<div class="col-span-full text-center py-10 text-sm text-slate-400">No hay especies registradas aún.</div>';
+        return;
+      }
+      container.innerHTML = filtered.map(s => `
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 flex gap-3 shadow-sm">
+          ${s.photo
+            ? `<img src="${s.photo}" class="w-20 h-20 rounded-xl object-cover shrink-0" />`
+            : `<div class="w-20 h-20 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center shrink-0 text-emerald-600"><i data-lucide="leaf" class="w-7 h-7"></i></div>`
+          }
+          <div class="flex-1 min-w-0 space-y-1">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${originBadgeClass(s.origen)}">${s.origen}</span>
+              <span class="text-[11px] text-slate-400">${s.date}</span>
+            </div>
+            <h4 class="font-bold text-sm truncate">${s.nombre_comun}</h4>
+            <p class="text-xs italic text-slate-500 truncate">${s.nombre_cientifico}</p>
+            <p class="text-xs text-slate-600 dark:text-slate-400 truncate">📍 ${s.zone} (${s.island})</p>
+            <div class="flex items-center gap-3 pt-1">
+              <button onclick="focusOnMap(${s.lat}, ${s.lng})" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">Ver en mapa</button>
+              <button onclick="deleteSpecies(${s.id})" class="text-xs text-rose-500 hover:underline ml-auto">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    window.focusOnMap = (lat, lng) => { switchTab('mapa'); setTimeout(() => map.setView([lat, lng], 13), 200); };
+    window.deleteSpecies = (id) => {
+      speciesList = speciesList.filter(s => s.id !== id);
+      localStorage.setItem(LS_SPECIES, JSON.stringify(speciesList));
+      renderSpeciesList(); showToast('Registro eliminado');
+    };
+    ['search-species', 'filter-origin', 'filter-island'].forEach(id => document.getElementById(id).addEventListener('input', renderSpeciesList));
+
+    // ================= SETTINGS & EXPORT =================
+    document.getElementById('setting-dark').addEventListener('change', (e) => { settings.dark = e.target.checked; saveSettings(); });
+    document.getElementById('btn-theme-quick').addEventListener('click', () => { settings.dark = !settings.dark; saveSettings(); });
+    document.getElementById('setting-invasive-alert').addEventListener('change', (e) => { settings.invasiveAlert = e.target.checked; saveSettings(); });
+    document.getElementById('setting-island').addEventListener('change', (e) => {
+      settings.defaultIsland = e.target.value; saveSettings();
+      document.getElementById('input-island').value = settings.defaultIsland;
+    });
+    document.getElementById('setting-maplayer').addEventListener('change', (e) => { settings.mapLayer = e.target.value; saveSettings(); });
+
+    document.getElementById('btn-export-json').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify({ speciesList, feedbackList }, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'biocanarias-registros.json'; a.click();
+    });
+    document.getElementById('btn-export-csv').addEventListener('click', () => {
+      const headers = ['Nombre Comun','Nombre Cientifico','Tipo','Habitat','Origen','Conservacion','Islas','Isla Registro','Zona','Lat','Lng','Fecha'];
+      const rows = speciesList.map(s => [
+        s.nombre_comun, s.nombre_cientifico, s.tipo, s.habitat, s.origen,
+        s.estado_conservacion, s.islas, s.island, s.zone, s.lat, s.lng, s.date
+      ].map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(','));
+      const blob = new Blob([[headers.join(','), ...rows].join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'biocanarias-registros.csv'; a.click();
+    });
+    document.getElementById('input-import-json').addEventListener('change', (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (Array.isArray(parsed.speciesList)) { speciesList = parsed.speciesList; localStorage.setItem(LS_SPECIES, JSON.stringify(speciesList)); }
+          if (Array.isArray(parsed.feedbackList)) { feedbackList = parsed.feedbackList; localStorage.setItem(LS_FEEDBACK, JSON.stringify(feedbackList)); }
+          showToast('Copia de seguridad importada'); renderSpeciesList();
+        } catch { showToast('Archivo JSON no válido'); }
+      };
+      reader.readAsText(file);
+    });
+    document.getElementById('btn-clear-data').addEventListener('click', () => {
+      if (!confirm('¿Seguro que quieres borrar todas tus especies registradas?')) return;
+      speciesList = []; localStorage.setItem(LS_SPECIES, '[]'); renderSpeciesList();
+      if (markersGroup) renderMapMarkers(); showToast('Registros eliminados');
+    });
+
+    // ================= PWA INSTALL & SW =================
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); deferredPrompt = e;
+      document.getElementById('btn-install-pwa').classList.remove('hidden');
+    });
+    document.getElementById('btn-install-pwa').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt(); await deferredPrompt.userChoice;
+      deferredPrompt = null; document.getElementById('btn-install-pwa').classList.add('hidden');
+    });
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => { navigator.serviceWorker.register('./service-worker.js').catch(() => {}); });
+    }
+
+    // ================= INIT =================
+    (function init() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('input-date').value = today;
+      document.getElementById('input-date').addEventListener('change', updateSeasonBadge);
+      updateSeasonBadge();
+
+      document.getElementById('input-island').value = settings.defaultIsland;
+      const c = ISLAND_COORDS[settings.defaultIsland];
+      document.getElementById('input-lat').value = c[0];
+      document.getElementById('input-lng').value = c[1];
+
+      applySettingsUI();
+      lucide.createIcons();
+    })();
+  </script>
+</body>
+</html>

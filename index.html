@@ -37,7 +37,7 @@
     body { -webkit-tap-highlight-color: transparent; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
-    #map { height: calc(100vh - 220px); min-height: 420px; width: 100%; z-index: 1; }
+    #map { height: calc(100vh - 250px); min-height: 420px; width: 100%; z-index: 1; cursor: crosshair; }
     .dark .leaflet-popup-content-wrapper, .dark .leaflet-popup-tip { background-color: #1e293b; color: #f1f5f9; }
     .pulse-rec { animation: pulseRec 1.2s infinite; }
     @keyframes pulseRec { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
@@ -56,7 +56,7 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button type="button" id="btn-header-sync" class="text-[11px] font-semibold bg-forest-800 hover:bg-emerald-800 px-2.5 py-1.5 rounded-lg border border-emerald-700/70">☁️ Sin cuenta</button>
+        <button type="button" id="btn-header-sync" class="text-[11px] font-semibold bg-forest-800 hover:bg-emerald-800 px-2.5 py-1.5 rounded-lg border border-emerald-700/70">☁️ Conectar</button>
         <button type="button" id="btn-install-pwa" class="hidden bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-3 py-1.5 rounded-lg shadow">⬇ Instalar</button>
         <button type="button" id="btn-theme-quick" title="Cambiar tema" class="px-2.5 py-1.5 rounded-lg bg-forest-800 hover:bg-emerald-800 text-xs font-semibold transition">🌓</button>
       </div>
@@ -65,7 +65,7 @@
     <nav class="bg-forest-800/95 border-t border-emerald-800/60">
       <div class="max-w-5xl mx-auto px-2 sm:px-4 grid grid-cols-4 md:flex md:gap-2">
         <button type="button" data-tab="nuevo" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-emerald-400 text-white text-center">➕ Nuevo</button>
-        <button type="button" data-tab="almacen" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-emerald-200 hover:text-white text-center">🗂️ Almacén</button>
+        <button type="button" data-tab="almacen" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-emerald-200 hover:text-white text-center">🏆 Almacén</button>
         <button type="button" data-tab="mapa" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-emerald-200 hover:text-white text-center">📍 Mapa</button>
         <button type="button" data-tab="ajustes" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-emerald-200 hover:text-white text-center">⚙️ Ajustes</button>
       </div>
@@ -120,18 +120,20 @@
           <button type="button" id="btn-reset-form" class="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">Limpiar campos</button>
         </div>
 
-        <!-- Nombre común y Nombre científico -->
+        <!-- Nombre común y Nombre científico con AUTOCOMPLETADO -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Nombre común / Título *</label>
             <input type="text" id="inp-common" required placeholder="Ej: Lagarto tizón, Ave en pinar..." class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
-          <div>
-            <label class="block text-xs font-medium text-slate-500 mb-1">Nombre científico (para consultar BD)</label>
+          <div class="relative">
+            <label class="block text-xs font-medium text-slate-500 mb-1">Nombre científico (autocompletado + BD)</label>
             <div class="flex gap-1.5">
-              <input type="text" id="inp-sci" placeholder="Ej: Gallotia galloti" class="flex-1 min-w-0 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-sm italic focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              <input type="text" id="inp-sci" list="sci-suggestions" autocomplete="off" placeholder="Escribe para ver sugerencias..." class="flex-1 min-w-0 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-sm italic focus:outline-none focus:ring-2 focus:ring-emerald-500" />
               <button type="button" id="btn-lookup-sci" class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-xl shadow-sm">🔍 Consultar</button>
             </div>
+            <datalist id="sci-suggestions"></datalist>
+            <div id="sci-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 z-40 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl max-h-56 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/60"></div>
           </div>
         </div>
 
@@ -156,7 +158,7 @@
             <span id="sci-status-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Introduce un nombre científico</span>
           </div>
           <p id="sci-check-summary" class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-            Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para comprobar en la base de datos interna, en tu almacén y en registros públicos si es habitual, poco habitual, nueva para ti o si activa alarma por invasora sin indicios previos en la zona.
+            Empieza a escribir el nombre científico para elegir de las sugerencias o pulsa <b>Consultar</b> para comprobar si es habitual, poco habitual, nueva para ti o si activa alarma por invasora sin indicios previos en la zona.
           </p>
           <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
             <a id="sci-link-biota" href="https://www.biodiversidadcanarias.es/biota/" target="_blank" rel="noopener" class="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-semibold hover:underline">BIOTA Canarias ↗</a>
@@ -270,9 +272,12 @@
 
         <!-- Ubicación y Fecha -->
         <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
-          <div class="flex items-center justify-between">
+          <div class="flex flex-wrap items-center justify-between gap-2">
             <h3 class="font-semibold text-xs uppercase tracking-wider text-slate-500">🧭 Ubicación y Fecha</h3>
-            <button type="button" id="btn-gps" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">📍 Usar GPS</button>
+            <div class="flex items-center gap-3">
+              <button type="button" id="btn-pick-on-map" class="text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline">🗺️ Marcar en mapa</button>
+              <button type="button" id="btn-gps" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">📍 Usar GPS</button>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -316,8 +321,76 @@
       </form>
     </section>
 
-    <!-- ================= TAB 2: MI ALMACÉN ================= -->
+    <!-- ================= TAB 2: MI ALMACÉN (ESTILO VIDEOJUEGO / BIODEX) ================= -->
     <section id="tab-almacen" class="tab-panel space-y-5">
+
+      <!-- PANEL DE RANGO, XP, PROGRESO POR ISLAS Y LOGROS -->
+      <div class="bg-gradient-to-br from-slate-900 via-forest-900 to-emerald-900 text-white rounded-2xl p-4 sm:p-5 shadow-lg border border-emerald-700/40 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div id="game-rank-icon" class="w-12 h-12 rounded-2xl bg-amber-400/20 border border-amber-400/50 flex items-center justify-center text-2xl shadow-inner">🌱</div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full">Nivel <span id="game-level">1</span></span>
+                <span id="game-rank-title" class="font-extrabold text-base sm:text-lg text-amber-300">Naturalista Novato</span>
+              </div>
+              <p class="text-xs text-emerald-200 mt-0.5"><b id="game-xp">0</b> XP totales · <span id="game-unique-species">0</span> especies distintas catalogadas</p>
+            </div>
+          </div>
+          <div class="text-right text-xs">
+            <p class="text-emerald-200">Siguiente nivel</p>
+            <p class="font-bold text-amber-300"><span id="game-next-xp">150</span> XP</p>
+          </div>
+        </div>
+
+        <!-- Barra de experiencia (XP) -->
+        <div class="space-y-1">
+          <div class="w-full h-3 bg-slate-950/60 rounded-full overflow-hidden border border-white/10 p-0.5">
+            <div id="game-xp-bar" class="h-full bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-400 rounded-full transition-all duration-500" style="width: 5%"></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-emerald-200/80">
+            <span>+20 XP por cita · +25 XP endémica · +30 XP amenaza/alerta</span>
+            <span id="game-xp-pct">0%</span>
+          </div>
+        </div>
+
+        <!-- Barras de progreso por Origen & Islas exploradas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+          <div class="bg-black/25 rounded-xl p-3 space-y-2 border border-white/10">
+            <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-200">📊 Composición de tu BioDex</p>
+            <div class="space-y-1.5 text-xs">
+              <div>
+                <div class="flex justify-between mb-0.5"><span>🟢 Endémicas</span><span id="bar-txt-endemica" class="font-bold">0 (0%)</span></div>
+                <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden"><div id="bar-endemica" class="h-full bg-emerald-400 rounded-full transition-all duration-500" style="width:0%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-0.5"><span>🔵 Autóctonas</span><span id="bar-txt-autoctona" class="font-bold">0 (0%)</span></div>
+                <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden"><div id="bar-autoctona" class="h-full bg-sky-400 rounded-full transition-all duration-500" style="width:0%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-0.5"><span>🔴 Invasoras detectadas</span><span id="bar-txt-invasora" class="font-bold">0 (0%)</span></div>
+                <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden"><div id="bar-invasora" class="h-full bg-rose-400 rounded-full transition-all duration-500" style="width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-black/25 rounded-xl p-3 space-y-2 border border-white/10">
+            <div class="flex items-center justify-between">
+              <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-200">🏝️ Mapa de Conquista Insular</p>
+              <span id="game-islands-count" class="text-[11px] font-bold text-amber-300">0 / 8 islas</span>
+            </div>
+            <div id="game-islands-grid" class="grid grid-cols-4 gap-1.5 text-[11px]"></div>
+          </div>
+        </div>
+
+        <!-- Medallas / Logros desbloqueables -->
+        <div class="space-y-1.5">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-200">🏅 Medallas de Explorador</p>
+          <div id="game-badges-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs"></div>
+        </div>
+      </div>
+
+      <!-- Contadores rápidos -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
           <p class="text-xs text-slate-500">Guardadas</p>
@@ -337,6 +410,13 @@
         </div>
       </div>
 
+      <!-- Filtros rápidos estilo misión -->
+      <div class="flex flex-wrap gap-1.5">
+        <button type="button" id="btn-quick-all" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-forest-900 text-white">Todas</button>
+        <button type="button" id="btn-quick-threat" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 border border-amber-300/60">⚠️ Amenazadas (VU/EN/CR)</button>
+        <button type="button" id="btn-quick-invasive" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-rose-100 dark:bg-rose-900/40 text-rose-800 dark:text-rose-200 border border-rose-300/60">🚨 Alertas Invasoras</button>
+      </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
         <input type="text" id="search-records" placeholder="Buscar por nombre, científico, nota o zona..." class="sm:col-span-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2 text-sm" />
         <select id="filter-origin" class="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm">
@@ -348,10 +428,11 @@
         </select>
         <select id="filter-conservation" class="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm">
           <option value="">Todo estado</option>
-          <option value="Vulnerable">Vulnerable</option>
-          <option value="En peligro">En peligro</option>
-          <option value="Casi amenazada">Casi amenazada</option>
-          <option value="Preocupación menor">Preocupación menor</option>
+          <option value="Amenazadas">Amenazadas (VU / EN / CR)</option>
+          <option value="Vulnerable">Vulnerable (VU)</option>
+          <option value="En peligro">En peligro (EN/CR)</option>
+          <option value="Casi amenazada">Casi amenazada (NT)</option>
+          <option value="Preocupación menor">Preocupación menor (LC)</option>
           <option value="Protegida">Protegida</option>
         </select>
         <select id="filter-island" class="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm">
@@ -370,8 +451,13 @@
       <div id="records-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
     </section>
 
-    <!-- ================= TAB 3: MAPA ================= -->
+    <!-- ================= TAB 3: MAPA INTERACTIVO ================= -->
     <section id="tab-mapa" class="tab-panel space-y-3">
+      <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-300/70 dark:border-amber-800 rounded-xl px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <span>🎯 <b>Toca cualquier punto del mapa</b> (barranco, costa o sendero) para fijar las coordenadas exactas y crear una cita ahí.</span>
+        <span id="picked-coords-pill" class="hidden font-mono font-bold text-emerald-800 dark:text-emerald-300"></span>
+      </div>
+
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex flex-wrap gap-1.5">
           <button type="button" data-filter="all" class="map-filter-btn bg-forest-900 text-white text-xs font-semibold px-3 py-1.5 rounded-full">Todas</button>
@@ -391,10 +477,12 @@
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 class="font-bold text-base">☁️ Cuenta y Sincronización (PC ↔ Móvil)</h2>
-            <p class="text-xs text-slate-500">Inicia sesión con el mismo email y contraseña en tu PC y móvil para compartir el almacén.</p>
+            <p class="text-xs text-slate-500">Usa el mismo email y contraseña en tu PC y móvil para compartir tu almacén.</p>
           </div>
           <span id="auth-status-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Modo local (sin sesión)</span>
         </div>
+
+        <div id="auth-error-box" class="hidden rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800 p-3 text-xs text-rose-800 dark:text-rose-200 leading-relaxed"></div>
 
         <div id="auth-logged-out" class="space-y-3">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -407,11 +495,14 @@
               <input type="password" id="auth-password" placeholder="••••••" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2 text-sm" />
             </div>
           </div>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <button type="button" id="btn-auth-login" class="bg-forest-900 hover:bg-emerald-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow">Iniciar sesión</button>
             <button type="button" id="btn-auth-register" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl">Crear cuenta nueva</button>
             <button type="button" id="btn-auth-reset" class="text-xs text-slate-500 hover:underline ml-auto">¿Olvidaste tu contraseña?</button>
           </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">
+            💡 Si es la primera vez que entras, pulsa <b>Crear cuenta nueva</b>. Asegúrate de tener activado <i>Correo electrónico/contraseña</i> en <b>Firebase > Authentication > Sign-in method</b>.
+          </p>
         </div>
 
         <div id="auth-logged-in" class="hidden space-y-3 bg-emerald-50/70 dark:bg-emerald-950/30 p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-900">
@@ -422,7 +513,6 @@
               <button type="button" id="btn-auth-logout" class="bg-slate-200 dark:bg-slate-800 text-xs font-semibold px-3 py-1.5 rounded-lg">Cerrar sesión</button>
             </div>
           </div>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Los datos, ubicaciones, estados y notas se sincronizan automáticamente. Si una foto o audio supera el límite de Firestore (900 KB), se conserva igualmente en tu dispositivo.</p>
         </div>
       </div>
 
@@ -543,9 +633,45 @@
 
     let fbAuth = null, fbDb = null, currentUser = null, unsubscribeCloud = null;
 
+    function formatFirebaseError(err) {
+      const code = (err && err.code) || '';
+      if (code === 'auth/operation-not-allowed') {
+        return '⚠️ El inicio con Email/Contraseña aún no está activado en Firebase. Entra en Firebase Console → Authentication → Sign-in method → activa "Correo electrónico/contraseña" y pulsa Guardar.';
+      }
+      if (code === 'auth/unauthorized-domain') {
+        return '⚠️ Este dominio web aún no está autorizado en Firebase. Entra en Firebase Console → Authentication → Settings → Dominios autorizados y añade tu dominio (ej. k833.github.io o biocanarias.netlify.app).';
+      }
+      if (code === 'auth/email-already-in-use') {
+        return 'Ese correo ya tiene cuenta creada. Pulsa "Iniciar sesión" en lugar de "Crear cuenta nueva".';
+      }
+      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+        return 'Correo o contraseña incorrectos (o aún no has pulsado "Crear cuenta nueva").';
+      }
+      if (code === 'auth/weak-password') {
+        return 'La contraseña debe tener al menos 6 caracteres.';
+      }
+      if (code === 'auth/invalid-email') {
+        return 'El formato del correo electrónico no es válido.';
+      }
+      if (code === 'permission-denied') {
+        return '⚠️ Firestore bloqueó la lectura/escritura por reglas de seguridad. Ve a Firebase Console → Firestore Database → Reglas y permite acceso a usuarios autenticados.';
+      }
+      return (err && err.message) ? err.message : 'Error de conexión con Firebase';
+    }
+
+    function showAuthError(msg) {
+      const box = document.getElementById('auth-error-box');
+      if (!msg) { box.classList.add('hidden'); box.textContent = ''; return; }
+      box.textContent = msg;
+      box.classList.remove('hidden');
+    }
+
     function initFirebase() {
       try {
-        if (typeof firebase === 'undefined') return;
+        if (typeof firebase === 'undefined') {
+          showAuthError('No se pudo cargar el SDK de Firebase (revisa tu conexión a internet).');
+          return;
+        }
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         fbAuth = firebase.auth();
         fbDb = firebase.firestore();
@@ -555,11 +681,13 @@
           updateAuthUI();
           if (unsubscribeCloud) { unsubscribeCloud(); unsubscribeCloud = null; }
           if (user) {
+            showAuthError(null);
             await mergeLocalToCloudAndListen(user);
           }
         });
       } catch (e) {
         console.error('Firebase init error:', e);
+        showAuthError(formatFirebaseError(e));
       }
     }
 
@@ -586,7 +714,6 @@
 
     function sanitizeForFirestore(rec) {
       const copy = Object.assign({}, rec);
-      // Firestore doc max size is 1MB; keep media if small enough, otherwise omit heavy base64 from cloud doc while preserving in local IndexedDB
       if (copy.photo && copy.photo.length > 650000) copy.photo = null;
       if (copy.audio && copy.audio.length > 650000) copy.audio = null;
       return copy;
@@ -598,7 +725,7 @@
         await fbDb.collection('users').doc(currentUser.uid).collection('records').doc(String(rec.id)).set(sanitizeForFirestore(rec), { merge: true });
       } catch (e) {
         console.error('Cloud save error:', e);
-        showToast('Guardado en local (aviso al subir a la nube: revisa reglas de Firestore)');
+        showAuthError(formatFirebaseError(e));
       }
     }
 
@@ -622,7 +749,6 @@
           const data = doc.data();
           if (data && data.id) dbPut(data);
         });
-        // Subir registros locales que aún no existan en la nube
         const localAll = await dbGetAll();
         for (const item of localAll) {
           if (!cloudIds.has(String(item.id))) {
@@ -634,17 +760,15 @@
         if (markersGroup) renderMapMarkers();
       } catch (e) {
         console.error('Sync error:', e);
-        showToast('Error al sincronizar con Firestore. Comprueba que la base de datos esté creada.');
+        showAuthError(formatFirebaseError(e));
       }
 
-      // Escucha en tiempo real para cambios desde el otro dispositivo
       unsubscribeCloud = colRef.onSnapshot(async (snapshot) => {
         let changed = false;
         for (const change of snapshot.docChanges()) {
           const data = change.doc.data();
           if (change.type === 'added' || change.type === 'modified') {
             const existing = records.find(r => String(r.id) === String(data.id));
-            // Conservar foto/audio local si en la nube se omitió por tamaño
             if (existing) {
               if (!data.photo && existing.photo) data.photo = existing.photo;
               if (!data.audio && existing.audio) data.audio = existing.audio;
@@ -661,46 +785,51 @@
           renderRecordsList();
           if (markersGroup) renderMapMarkers();
         }
+      }, (err) => {
+        showAuthError(formatFirebaseError(err));
       });
     }
 
     document.getElementById('btn-header-sync').addEventListener('click', () => switchTab('ajustes'));
 
     document.getElementById('btn-auth-login').addEventListener('click', async () => {
-      if (!fbAuth) return showToast('Firebase no disponible');
+      if (!fbAuth) return showAuthError('Firebase no está inicializado.');
+      showAuthError(null);
       const email = document.getElementById('auth-email').value.trim();
       const pass = document.getElementById('auth-password').value;
-      if (!email || !pass) return showToast('Introduce tu email y contraseña');
+      if (!email || !pass) return showAuthError('Introduce tu correo electrónico y contraseña.');
       try {
         await fbAuth.signInWithEmailAndPassword(email, pass);
         showToast('Sesión iniciada correctamente');
       } catch (err) {
-        showToast('Error al iniciar sesión: ' + (err.message || err.code));
+        showAuthError(formatFirebaseError(err));
       }
     });
 
     document.getElementById('btn-auth-register').addEventListener('click', async () => {
-      if (!fbAuth) return showToast('Firebase no disponible');
+      if (!fbAuth) return showAuthError('Firebase no está inicializado.');
+      showAuthError(null);
       const email = document.getElementById('auth-email').value.trim();
       const pass = document.getElementById('auth-password').value;
-      if (!email || pass.length < 6) return showToast('Usa un email válido y contraseña de al menos 6 caracteres');
+      if (!email || pass.length < 6) return showAuthError('Usa un correo válido y una contraseña de al menos 6 caracteres.');
       try {
         await fbAuth.createUserWithEmailAndPassword(email, pass);
         showToast('Cuenta creada y conectada');
       } catch (err) {
-        showToast('Error al crear cuenta: ' + (err.message || err.code));
+        showAuthError(formatFirebaseError(err));
       }
     });
 
     document.getElementById('btn-auth-reset').addEventListener('click', async () => {
       if (!fbAuth) return;
+      showAuthError(null);
       const email = document.getElementById('auth-email').value.trim();
-      if (!email) return showToast('Escribe tu correo arriba para enviar el enlace de recuperación');
+      if (!email) return showAuthError('Escribe tu correo arriba para enviarte el enlace de recuperación.');
       try {
         await fbAuth.sendPasswordResetEmail(email);
         showToast('Correo de recuperación enviado');
       } catch (err) {
-        showToast('No se pudo enviar: ' + (err.message || err.code));
+        showAuthError(formatFirebaseError(err));
       }
     });
 
@@ -743,6 +872,7 @@
       { nombre_comun: 'Cotorra de Kramer', nombre_cientifico: 'Psittacula krameri', tipo: 'Animal', habitat: 'Terrestre', origen: 'Invasora', estado: 'Invasora (Catálogo Español)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote'], meses: 'Todo el año', curiosidad: 'Compite por cavidades de cría con aves locales y daña cultivos.', clave: 'Loro verde brillante de cola larga y pico rojo.', donde: 'Parques y palmerales costeros.', dieta: 'Frutos, semillas y brotes.', repro: 'Cavidades en palmeras y árboles.' }
     ];
 
+    const ALL_ISLANDS = ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'];
     const ISLAND_COORDS = {
       'Tenerife': [28.2916, -16.6291],
       'Gran Canaria': [27.9202, -15.5474],
@@ -846,7 +976,7 @@
     let currentModalRecord = null;
     let dailyIndex = Math.floor(Date.now() / 86400000) % CANARY_DB.length;
     let mediaRecorder = null, audioChunks = [], recInterval = null, recSeconds = 0;
-    let map = null, standardLayer = null, satelliteLayer = null, activeLayerName = settings.mapLayer, markersGroup = null, activeMapFilter = 'all';
+    let map = null, standardLayer = null, satelliteLayer = null, activeLayerName = settings.mapLayer, markersGroup = null, activeMapFilter = 'all', pickedMarker = null;
 
     function showToast(msg) {
       const t = document.getElementById('toast');
@@ -938,6 +1068,87 @@
       copyToClipboard(txt, 'Ficha de la especie copiada');
     });
 
+    // ================= AUTOCOMPLETADO DE NOMBRE CIENTÍFICO =================
+    let acTimer = null;
+
+    function initScientificDatalist() {
+      const dl = document.getElementById('sci-suggestions');
+      dl.innerHTML = CANARY_DB.map(sp => `<option value="${escapeHtml(sp.nombre_cientifico)}">${escapeHtml(sp.nombre_comun)} (${escapeHtml(sp.origen)})</option>`).join('');
+    }
+
+    function hideSciDropdown() {
+      document.getElementById('sci-dropdown').classList.add('hidden');
+    }
+
+    function renderSciDropdown(items) {
+      const dd = document.getElementById('sci-dropdown');
+      if (!items.length) { dd.classList.add('hidden'); return; }
+      dd.innerHTML = items.map(it => `
+        <button type="button" class="sci-opt-btn w-full text-left px-3.5 py-2 hover:bg-emerald-50 dark:hover:bg-slate-700/70 transition flex items-center justify-between gap-2" data-sci="${escapeHtml(it.sci)}" data-common="${escapeHtml(it.common || '')}">
+          <div class="min-w-0">
+            <p class="text-xs font-bold italic truncate">${escapeHtml(it.sci)}</p>
+            ${it.common ? `<p class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${escapeHtml(it.common)}</p>` : ''}
+          </div>
+          ${it.badge ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${it.badgeClass || 'bg-slate-100 dark:bg-slate-700'}">${escapeHtml(it.badge)}</span>` : ''}
+        </button>
+      `).join('');
+      dd.classList.remove('hidden');
+
+      dd.querySelectorAll('.sci-opt-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('inp-sci').value = btn.dataset.sci;
+          if (btn.dataset.common && !document.getElementById('inp-common').value.trim()) {
+            document.getElementById('inp-common').value = btn.dataset.common;
+          }
+          hideSciDropdown();
+          checkSpeciesByScientificName();
+        });
+      });
+    }
+
+    document.getElementById('inp-sci').addEventListener('input', () => {
+      const val = document.getElementById('inp-sci').value.trim();
+      updateSearchLinks(val, document.getElementById('inp-common').value);
+      clearTimeout(acTimer);
+      if (val.length < 2) { hideSciDropdown(); return; }
+
+      const q = val.toLowerCase();
+      const localMatches = CANARY_DB.filter(sp =>
+        sp.nombre_cientifico.toLowerCase().includes(q) || sp.nombre_comun.toLowerCase().includes(q)
+      ).map(sp => ({
+        sci: sp.nombre_cientifico,
+        common: sp.nombre_comun,
+        badge: sp.origen,
+        badgeClass: originBadgeClass(sp.origen)
+      }));
+
+      renderSciDropdown(localMatches);
+
+      acTimer = setTimeout(async () => {
+        try {
+          const resp = await fetch(`https://api.inaturalist.org/v1/taxa/autocomplete?q=${encodeURIComponent(val)}&locale=es&per_page=6`);
+          if (!resp.ok) return;
+          const data = await resp.json();
+          const seen = new Set(localMatches.map(m => m.sci.toLowerCase()));
+          const remoteMatches = (data.results || [])
+            .filter(t => t.name && t.rank === 'species' && !seen.has(t.name.toLowerCase()))
+            .map(t => ({
+              sci: t.name,
+              common: t.preferred_common_name || '',
+              badge: t.iconic_taxon_name || 'Taxón',
+              badgeClass: 'bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-300'
+            }));
+          if (document.getElementById('inp-sci').value.trim().toLowerCase() === q) {
+            renderSciDropdown([...localMatches, ...remoteMatches].slice(0, 8));
+          }
+        } catch {}
+      }, 280);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#inp-sci') && !e.target.closest('#sci-dropdown')) hideSciDropdown();
+    });
+
     // ================= CONSULTA POR NOMBRE CIENTÍFICO + ALARMA INVASORAS =================
     function updateSearchLinks(sciRaw, commonRaw) {
       const query = encodeURIComponent((sciRaw || commonRaw || '').trim());
@@ -982,6 +1193,7 @@
     document.getElementById('btn-dismiss-alarm').addEventListener('click', hideInvasiveAlarm);
 
     async function checkSpeciesByScientificName() {
+      hideSciDropdown();
       const sciInput = document.getElementById('inp-sci');
       const commonInput = document.getElementById('inp-common');
       const originSelect = document.getElementById('inp-origin');
@@ -1000,7 +1212,7 @@
       if (!sci && originSelect.value !== 'Invasora') {
         hideInvasiveAlarm();
         badge.textContent = 'Introduce un nombre científico';
-        summary.innerHTML = 'Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para comprobar en la base de datos interna, en tu almacén y en registros públicos si es habitual, poco habitual, nueva para ti o si activa alarma por invasora sin indicios previos en la zona.';
+        summary.innerHTML = 'Empieza a escribir el nombre científico para elegir de las sugerencias o pulsa <b>Consultar</b> para comprobar si es habitual, poco habitual, nueva para ti o si activa alarma por invasora sin indicios previos en la zona.';
         return;
       }
 
@@ -1117,7 +1329,6 @@
     document.getElementById('btn-lookup-sci').addEventListener('click', checkSpeciesByScientificName);
     document.getElementById('inp-sci').addEventListener('change', checkSpeciesByScientificName);
     document.getElementById('inp-origin').addEventListener('change', checkSpeciesByScientificName);
-    document.getElementById('inp-sci').addEventListener('input', () => updateSearchLinks(document.getElementById('inp-sci').value, document.getElementById('inp-common').value));
     document.getElementById('inp-common').addEventListener('input', () => updateSearchLinks(document.getElementById('inp-sci').value, document.getElementById('inp-common').value));
 
     document.getElementById('inp-type').addEventListener('change', (e) => {
@@ -1277,7 +1488,12 @@
       reader.readAsDataURL(file);
     });
 
-    // ================= UBICACIÓN (GPS + BÚSQUEDA ESCRITA) =================
+    // ================= UBICACIÓN (GPS + BÚSQUEDA ESCRITA + MAPA) =================
+    document.getElementById('btn-pick-on-map').addEventListener('click', () => {
+      switchTab('mapa');
+      showToast('Toca cualquier punto del mapa para marcar la ubicación');
+    });
+
     document.getElementById('inp-island').addEventListener('change', (e) => {
       const c = ISLAND_COORDS[e.target.value];
       if (c) { document.getElementById('inp-lat').value = c[0]; document.getElementById('inp-lng').value = c[1]; }
@@ -1352,7 +1568,7 @@
         (err) => {
           if (err.code === 1) showToast('Permiso de ubicación denegado.');
           else if (err.code === 2) showToast('Señal GPS no disponible.');
-          else showToast('Tiempo agotado al obtener GPS.');
+          else showToast('Tiempo de espera agotado al obtener GPS.');
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
@@ -1376,7 +1592,7 @@
       updateSearchLinks('', '');
       hideInvasiveAlarm();
       document.getElementById('sci-status-badge').textContent = 'Introduce un nombre científico';
-      document.getElementById('sci-check-summary').innerHTML = 'Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para comprobar en la base de datos interna, en tu almacén y en registros públicos si es habitual, poco habitual, nueva para ti o si activa alarma por invasora sin indicios previos en la zona.';
+      document.getElementById('sci-check-summary').innerHTML = 'Empieza a escribir el nombre científico para elegir de las sugerencias o pulsa <b>Consultar</b> para comprobar si es habitual, poco habitual, nueva para ti o si activa alarma por invasora sin indicios previos en la zona.';
     }
 
     document.getElementById('btn-reset-form').addEventListener('click', resetForm);
@@ -1422,8 +1638,91 @@
       }
     });
 
-    // ================= RENDER ALMACÉN & MODAL =================
+    // ================= GAMIFICACIÓN + RENDER ALMACÉN =================
+    function renderGamification() {
+      const total = records.length;
+      const endCount = records.filter(r => r.origen === 'Endémica').length;
+      const autCount = records.filter(r => r.origen === 'Autóctona').length;
+      const invCount = records.filter(r => r.origen === 'Invasora').length;
+      const threatCount = records.filter(r => /vulnerable|peligro|protegida/i.test(r.estado_conservacion || '')).length;
+      const marineCount = records.filter(r => r.habitat === 'Marino').length;
+      const mediaCount = records.filter(r => r.photo || r.audio).length;
+
+      const uniqueNames = new Set(records.map(r => (r.nombre_cientifico || r.nombre_comun || '').trim().toLowerCase()).filter(Boolean));
+      const visitedIslands = new Set(records.map(r => r.island).filter(Boolean));
+
+      const xp = (total * 20) + (uniqueNames.size * 15) + (endCount * 25) + (threatCount * 30) + (invCount * 30) + (visitedIslands.size * 40);
+      const level = Math.floor(xp / 150) + 1;
+      const currentLevelBase = (level - 1) * 150;
+      const nextLevelXp = level * 150;
+      const pct = Math.min(100, Math.round(((xp - currentLevelBase) / 150) * 100));
+
+      const ranks = [
+        { min: 1, title: 'Naturalista Novato', icon: '🌱' },
+        { min: 2, title: 'Rastreador de Senderos', icon: '🥾' },
+        { min: 4, title: 'Explorador Insular', icon: '🧭' },
+        { min: 6, title: 'Guardián de Endemismos', icon: '🦎' },
+        { min: 9, title: 'Biólogo de Campo Canario', icon: '🔬' },
+        { min: 13, title: 'Maestro de la Macaronesia', icon: '🌋' }
+      ];
+      let currentRank = ranks[0];
+      for (const rk of ranks) { if (level >= rk.min) currentRank = rk; }
+
+      document.getElementById('game-rank-icon').textContent = currentRank.icon;
+      document.getElementById('game-level').textContent = level;
+      document.getElementById('game-rank-title').textContent = currentRank.title;
+      document.getElementById('game-xp').textContent = xp;
+      document.getElementById('game-unique-species').textContent = uniqueNames.size;
+      document.getElementById('game-next-xp').textContent = nextLevelXp;
+      document.getElementById('game-xp-bar').style.width = `${Math.max(4, pct)}%`;
+      document.getElementById('game-xp-pct').textContent = `${pct}%`;
+
+      const safePct = (n) => total ? Math.round((n / total) * 100) : 0;
+      document.getElementById('bar-txt-endemica').textContent = `${endCount} (${safePct(endCount)}%)`;
+      document.getElementById('bar-endemica').style.width = `${safePct(endCount)}%`;
+      document.getElementById('bar-txt-autoctona').textContent = `${autCount} (${safePct(autCount)}%)`;
+      document.getElementById('bar-autoctona').style.width = `${safePct(autCount)}%`;
+      document.getElementById('bar-txt-invasora').textContent = `${invCount} (${safePct(invCount)}%)`;
+      document.getElementById('bar-invasora').style.width = `${safePct(invCount)}%`;
+
+      document.getElementById('game-islands-count').textContent = `${visitedIslands.size} / 8 islas`;
+      document.getElementById('game-islands-grid').innerHTML = ALL_ISLANDS.map(isl => {
+        const count = records.filter(r => r.island === isl).length;
+        const unlocked = count > 0;
+        const shortName = isl === 'Fuerteventura' ? 'Fuertev.' : (isl === 'Gran Canaria' ? 'G. Canaria' : (isl === 'La Graciosa' ? 'Graciosa' : isl));
+        return `
+          <div class="rounded-lg px-1.5 py-1.5 text-center border ${unlocked ? 'bg-emerald-500/25 border-emerald-400/60 text-white' : 'bg-white/5 border-white/10 text-slate-400'}">
+            <p class="font-bold truncate">${shortName}</p>
+            <p class="text-[10px] ${unlocked ? 'text-amber-300 font-semibold' : ''}">${unlocked ? count + ' citas' : '🔒'}</p>
+          </div>
+        `;
+      }).join('');
+
+      const badges = [
+        { name: 'Primera Cita', desc: '1+ observación', ok: total >= 1, icon: '🏅' },
+        { name: 'Cazador Endémico', desc: '3+ endémicas', ok: endCount >= 3, icon: '🌿' },
+        { name: 'Centinela EXOS', desc: '1+ invasora detectada', ok: invCount >= 1, icon: '🚨' },
+        { name: 'Explorador Azul', desc: '2+ citas marinas', ok: marineCount >= 2, icon: '🦈' },
+        { name: 'Protector Fauna/Flora', desc: '1+ especie amenazada', ok: threatCount >= 1, icon: '🛡️' },
+        { name: 'Reportero de Campo', desc: '3+ fotos o audios', ok: mediaCount >= 3, icon: '📸' },
+        { name: 'Salto entre Islas', desc: '2+ islas exploradas', ok: visitedIslands.size >= 2, icon: '⛵' },
+        { name: 'Enciclopedia Viva', desc: '10+ especies distintas', ok: uniqueNames.size >= 10, icon: '📚' }
+      ];
+
+      document.getElementById('game-badges-grid').innerHTML = badges.map(b => `
+        <div class="rounded-xl p-2 border flex items-center gap-2 ${b.ok ? 'bg-amber-400/15 border-amber-400/50 text-white' : 'bg-black/20 border-white/10 text-slate-400 opacity-65'}">
+          <span class="text-lg shrink-0">${b.ok ? b.icon : '🔒'}</span>
+          <div class="min-w-0">
+            <p class="font-bold text-[11px] truncate ${b.ok ? 'text-amber-200' : ''}">${b.name}</p>
+            <p class="text-[10px] truncate">${b.desc}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
     function renderRecordsList() {
+      renderGamification();
+
       const q = document.getElementById('search-records').value.toLowerCase();
       const fOrigin = document.getElementById('filter-origin').value;
       const fCons = document.getElementById('filter-conservation').value.toLowerCase();
@@ -1436,10 +1735,16 @@
 
       const filtered = records.filter(r => {
         const hay = `${r.nombre_comun} ${r.nombre_cientifico} ${r.descripcion} ${r.zone} ${r.estado_conservacion || ''} ${r.sexo || ''}`.toLowerCase();
-        return (!q || hay.includes(q))
-          && (!fOrigin || r.origen === fOrigin)
-          && (!fCons || (r.estado_conservacion || '').toLowerCase().includes(fCons))
-          && (!fIsland || r.island === fIsland);
+        const matchQ = !q || hay.includes(q);
+        const matchO = !fOrigin || r.origen === fOrigin;
+        const matchI = !fIsland || r.island === fIsland;
+        let matchC = true;
+        if (fCons === 'amenazadas') {
+          matchC = /vulnerable|peligro/i.test(r.estado_conservacion || '');
+        } else if (fCons) {
+          matchC = (r.estado_conservacion || '').toLowerCase().includes(fCons);
+        }
+        return matchQ && matchO && matchC && matchI;
       });
 
       const container = document.getElementById('records-list');
@@ -1470,6 +1775,22 @@
         </div>
       `).join('');
     }
+
+    document.getElementById('btn-quick-all').addEventListener('click', () => {
+      document.getElementById('filter-origin').value = '';
+      document.getElementById('filter-conservation').value = '';
+      renderRecordsList();
+    });
+    document.getElementById('btn-quick-threat').addEventListener('click', () => {
+      document.getElementById('filter-origin').value = '';
+      document.getElementById('filter-conservation').value = 'Amenazadas';
+      renderRecordsList();
+    });
+    document.getElementById('btn-quick-invasive').addEventListener('click', () => {
+      document.getElementById('filter-conservation').value = '';
+      document.getElementById('filter-origin').value = 'Invasora';
+      renderRecordsList();
+    });
 
     ['search-records', 'filter-origin', 'filter-conservation', 'filter-island'].forEach(id => {
       document.getElementById(id).addEventListener('input', renderRecordsList);
@@ -1572,7 +1893,30 @@
       showToast('Registro eliminado');
     });
 
-    // ================= MAPA =================
+    // ================= MAPA INTERACTIVO (CLIC PARA MARCAR PUNTO) =================
+    window.usePickedMapLocation = (lat, lng) => {
+      const detectedIsland = detectNearestIsland(lat, lng);
+      document.getElementById('inp-lat').value = lat.toFixed(5);
+      document.getElementById('inp-lng').value = lng.toFixed(5);
+      document.getElementById('inp-island').value = detectedIsland;
+      switchTab('nuevo');
+      showToast(`Punto fijado en ${detectedIsland} (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`, { headers: { 'Accept-Language': 'es' } })
+        .then(r => r.json())
+        .then(data => {
+          const addr = (data && data.address) || {};
+          const placeName = addr.natural || addr.peak || addr.village || addr.town || addr.suburb || addr.municipality || '';
+          if (placeName && !document.getElementById('inp-zone').value.trim()) {
+            document.getElementById('inp-zone').value = placeName;
+          }
+          if (document.getElementById('inp-sci').value.trim() || document.getElementById('inp-origin').value === 'Invasora') {
+            checkSpeciesByScientificName();
+          }
+        })
+        .catch(() => {});
+    };
+
     function initMap() {
       if (map || typeof L === 'undefined') return;
       map = L.map('map').setView([28.35, -15.7], 7);
@@ -1587,6 +1931,28 @@
         document.getElementById('layer-label').textContent = 'Satélite';
       }
       markersGroup = L.layerGroup().addTo(map);
+
+      map.on('click', (e) => {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        const isl = detectNearestIsland(lat, lng);
+
+        const pill = document.getElementById('picked-coords-pill');
+        pill.textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)} (${isl})`;
+        pill.classList.remove('hidden');
+
+        if (pickedMarker) map.removeLayer(pickedMarker);
+        pickedMarker = L.marker([lat, lng]).addTo(map);
+        pickedMarker.bindPopup(`
+          <div style="font-family:sans-serif;text-align:center;min-width:160px;">
+            <strong style="font-size:12px;">📍 Punto seleccionado</strong><br/>
+            <span style="font-size:11px;color:#64748b;">${isl} · ${lat.toFixed(5)}, ${lng.toFixed(5)}</span><br/>
+            <button type="button" onclick="usePickedMapLocation(${lat}, ${lng})" style="margin-top:6px;background:#0f3d2e;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:bold;cursor:pointer;width:100%;">
+              ➕ Registrar especie aquí
+            </button>
+          </div>
+        `).openPopup();
+      });
     }
 
     function renderMapMarkers() {
@@ -1727,6 +2093,7 @@
     // ================= INIT =================
     (async function init() {
       applySettingsUI();
+      initScientificDatalist();
       renderDailySpecies();
       resetForm();
       await openDB();

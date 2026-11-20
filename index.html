@@ -20,14 +20,7 @@
       theme: {
         extend: {
           colors: {
-            forest: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              500: '#10b981',
-              700: '#047857',
-              800: '#134e3b',
-              900: '#0f3d2e',
-            }
+            forest: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 700: '#047857', 800: '#134e3b', 900: '#0f3d2e' }
           }
         }
       }
@@ -36,65 +29,47 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     body { -webkit-tap-highlight-color: transparent; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
     #map { height: calc(100vh - 220px); min-height: 420px; width: 100%; z-index: 1; }
-    .dark .leaflet-popup-content-wrapper, .dark .leaflet-popup-tip {
-      background-color: #1e293b; color: #f1f5f9;
-    }
+    .dark .leaflet-popup-content-wrapper, .dark .leaflet-popup-tip { background-color: #1e293b; color: #f1f5f9; }
     .pulse-rec { animation: pulseRec 1.2s infinite; }
-    @keyframes pulseRec {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.6; transform: scale(1.05); }
-    }
+    @keyframes pulseRec { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
 
-  <!-- Header -->
+  <!-- Header + Top Nav -->
   <header class="sticky top-0 z-30 bg-forest-900 text-white shadow-md">
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <img src="./icon-192.png" alt="BioCanarias" class="w-9 h-9 rounded-xl shadow" />
+        <img src="./icon-192.png" alt="BioCanarias" class="w-9 h-9 rounded-xl shadow bg-emerald-800" />
         <div>
           <h1 class="font-bold text-lg leading-tight tracking-tight">BioCanarias</h1>
           <p class="text-[11px] text-emerald-200">Cuaderno de Campo · Base de Datos y Almacén</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button id="btn-install-pwa" class="hidden bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i> Instalar
-        </button>
-        <button id="btn-theme-quick" title="Cambiar tema" class="p-2 rounded-lg bg-forest-800 hover:bg-emerald-800 transition">
-          <i data-lucide="moon" class="w-4 h-4"></i>
-        </button>
+        <button type="button" id="btn-install-pwa" class="hidden bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-3 py-1.5 rounded-lg shadow">⬇ Instalar</button>
+        <button type="button" id="btn-theme-quick" title="Cambiar tema" class="px-2.5 py-1.5 rounded-lg bg-forest-800 hover:bg-emerald-800 text-xs font-semibold transition">🌓 Tema</button>
       </div>
     </div>
 
-    <nav class="bg-forest-800/90 border-t border-emerald-800/60">
+    <nav class="bg-forest-800/95 border-t border-emerald-800/60">
       <div class="max-w-5xl mx-auto px-2 sm:px-4 grid grid-cols-4 md:flex md:gap-2">
-        <button data-tab="nuevo" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 border-emerald-400 text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-          <i data-lucide="plus-circle" class="w-4 h-4"></i> <span>Nuevo</span>
-        </button>
-        <button data-tab="almacen" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-emerald-200 hover:text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-          <i data-lucide="archive" class="w-4 h-4"></i> <span>Almacén</span>
-        </button>
-        <button data-tab="mapa" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-emerald-200 hover:text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-          <i data-lucide="map-pin" class="w-4 h-4"></i> <span>Mapa</span>
-        </button>
-        <button data-tab="ajustes" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 border-transparent text-emerald-200 hover:text-white flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-          <i data-lucide="settings" class="w-4 h-4"></i> <span>Ajustes</span>
-        </button>
+        <button type="button" data-tab="nuevo" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-emerald-400 text-white text-center">➕ Nuevo</button>
+        <button type="button" data-tab="almacen" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-emerald-200 hover:text-white text-center">🗂️ Almacén</button>
+        <button type="button" data-tab="mapa" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-emerald-200 hover:text-white text-center">📍 Mapa</button>
+        <button type="button" data-tab="ajustes" class="nav-btn px-2 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-emerald-200 hover:text-white text-center">⚙️ Ajustes</button>
       </div>
     </nav>
   </header>
 
-  <main class="flex-1 max-w-5xl w-full mx-auto px-4 pt-5 pb-20 md:pb-12">
-    <div id="toast" class="fixed top-20 right-4 z-50 hidden max-w-sm bg-slate-900 dark:bg-emerald-700 text-white text-sm px-4 py-3 rounded-xl shadow-lg"></div>
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 pt-5 pb-24 md:pb-12">
+    <div id="toast" class="fixed top-24 right-4 z-50 hidden max-w-sm bg-slate-900 dark:bg-emerald-700 text-white text-sm px-4 py-3 rounded-xl shadow-lg"></div>
 
     <!-- ================= TAB 1: NUEVO REGISTRO + ESPECIE DEL DÍA ================= -->
     <section id="tab-nuevo" class="tab-panel active space-y-5">
@@ -102,19 +77,15 @@
       <!-- ESPECIE DEL DÍA -->
       <div class="bg-gradient-to-br from-forest-900 to-emerald-800 text-white rounded-2xl p-4 sm:p-5 shadow-md space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="flex flex-wrap items-center gap-1.5">
             <span class="text-[11px] font-bold uppercase tracking-wider bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">Especie del día</span>
             <span id="daily-origin" class="text-[11px] font-semibold bg-white/15 px-2.5 py-0.5 rounded-full"></span>
             <span id="daily-habitat" class="text-[11px] font-semibold bg-sky-400/20 text-sky-100 px-2.5 py-0.5 rounded-full"></span>
             <span id="daily-status-pill" class="text-[11px] font-semibold bg-amber-500/25 text-amber-100 px-2.5 py-0.5 rounded-full"></span>
           </div>
           <div class="flex items-center gap-1.5">
-            <button type="button" id="btn-daily-copy" class="bg-white/15 hover:bg-white/25 text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition" title="Copiar ficha de la especie">
-              <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar
-            </button>
-            <button type="button" id="btn-daily-next" class="bg-white/15 hover:bg-white/25 text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition" title="Ver otra especie canaria">
-              <i data-lucide="shuffle" class="w-3.5 h-3.5"></i> Otra
-            </button>
+            <button type="button" id="btn-daily-copy" class="bg-white/15 hover:bg-white/25 text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg transition">📋 Copiar</button>
+            <button type="button" id="btn-daily-next" class="bg-white/15 hover:bg-white/25 text-white text-xs font-semibold px-2.5 py-1.5 rounded-lg transition">🔀 Otra</button>
           </div>
         </div>
 
@@ -135,70 +106,53 @@
           <div><b class="text-amber-200">Conservación:</b> <span id="daily-status"></span></div>
         </div>
 
-        <button type="button" id="btn-daily-toggle" class="text-xs font-semibold text-emerald-200 hover:text-white underline">
-          Ver más detalles
-        </button>
+        <button type="button" id="btn-daily-toggle" class="text-xs font-semibold text-emerald-200 hover:text-white underline">Ver más detalles</button>
       </div>
 
       <!-- FORMULARIO DE ALMACÉN -->
       <form id="record-form" class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-4 sm:p-6 space-y-5">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <h2 id="form-title" class="font-bold text-base flex items-center gap-2">
-            <i data-lucide="folder-plus" class="w-5 h-5 text-emerald-600"></i> Guardar nueva observación
-          </h2>
-          <button type="button" id="btn-reset-form" class="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">
-            Limpiar campos
-          </button>
+          <h2 id="form-title" class="font-bold text-base">📝 Guardar nueva observación</h2>
+          <button type="button" id="btn-reset-form" class="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">Limpiar campos</button>
         </div>
 
-        <!-- Nombre común y Nombre científico + Buscador BD -->
+        <!-- Nombre común y Nombre científico -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-500 mb-1">Nombre común / Título *</label>
-            <input type="text" id="inp-common" required placeholder="Ej: Lagarto tizón, Ave desconocida en pinar..." class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <input type="text" id="inp-common" required placeholder="Ej: Lagarto tizón, Ave en pinar..." class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-500 mb-1">Nombre científico (para consultar BD y buscador)</label>
+            <label class="block text-xs font-medium text-slate-500 mb-1">Nombre científico (para consultar BD)</label>
             <div class="flex gap-1.5">
               <input type="text" id="inp-sci" placeholder="Ej: Gallotia galloti" class="flex-1 min-w-0 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-sm italic focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-              <button type="button" id="btn-lookup-sci" class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1 shadow-sm" title="Comprobar en base de datos y registros">
-                <i data-lucide="search-check" class="w-4 h-4"></i> Consultar
-              </button>
+              <button type="button" id="btn-lookup-sci" class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-xl shadow-sm">🔍 Consultar</button>
             </div>
           </div>
         </div>
 
-        <!-- Alarma de especie invasora sin indicios previos en la zona -->
+        <!-- ALARMA DE ESPECIE INVASORA SIN INDICIOS PREVIOS -->
         <div id="invasive-alarm-banner" class="hidden rounded-2xl border-2 border-rose-600 bg-rose-600 text-white p-4 shadow-lg space-y-2">
           <div class="flex items-start justify-between gap-2">
-            <div class="flex items-center gap-2">
-              <i data-lucide="siren" class="w-6 h-6 shrink-0 animate-bounce"></i>
-              <div>
-                <p class="font-extrabold text-sm uppercase tracking-wide">¡ALARMA! Posible foco nuevo de especie invasora</p>
-                <p id="invasive-alarm-text" class="text-xs text-rose-100 mt-0.5 leading-relaxed"></p>
-              </div>
+            <div>
+              <p class="font-extrabold text-sm uppercase tracking-wide">🚨 ¡ALARMA! Posible foco nuevo de especie invasora</p>
+              <p id="invasive-alarm-text" class="text-xs text-rose-100 mt-1 leading-relaxed"></p>
             </div>
-            <button type="button" id="btn-dismiss-alarm" class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-lg font-semibold shrink-0">Entendido</button>
+            <button type="button" id="btn-dismiss-alarm" class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-lg font-semibold shrink-0">Cerrar</button>
           </div>
-          <div class="flex flex-wrap gap-2 pt-1">
-            <a id="alarm-link-exos" href="https://www.biodiversidadcanarias.es/exos/" target="_blank" rel="noopener" class="bg-white text-rose-700 font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm hover:bg-rose-50">
-              Avisar / Consultar en RedEXOS ↗
-            </a>
+          <div class="pt-1">
+            <a id="alarm-link-exos" href="https://www.biodiversidadcanarias.es/exos/" target="_blank" rel="noopener" class="inline-block bg-white text-rose-700 font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm hover:bg-rose-50">Avisar / Consultar en RedEXOS ↗</a>
           </div>
         </div>
 
-        <!-- Diagnóstico automático de la app (BD local + registros guardados + registros públicos) -->
+        <!-- DIAGNÓSTICO POR BASE DE DATOS Y NOMBRE CIENTÍFICO -->
         <div id="sci-check-box" class="rounded-2xl border border-emerald-200 dark:border-emerald-900/70 bg-emerald-50/60 dark:bg-emerald-950/30 p-3.5 space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <span class="text-xs font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5">
-              <i data-lucide="database-search" class="w-4 h-4"></i> Diagnóstico por base de datos y nombre científico
-            </span>
-            <span id="sci-status-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
-              Introduce un nombre científico
-            </span>
+            <span class="text-xs font-bold text-emerald-900 dark:text-emerald-300">🧭 Diagnóstico de presencia en la zona</span>
+            <span id="sci-status-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">Introduce un nombre científico</span>
           </div>
           <p id="sci-check-summary" class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-            Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para que la app revise su base de datos interna, tus registros guardados y los registros públicos en Canarias para indicar si es habitual, poco habitual, nueva para ti o si activa alarma por invasora sin registros previos en la zona.
+            Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para comprobar en la base de datos interna, en tu almacén y en registros públicos si es habitual, poco habitual, nueva para ti o si activa alarma por invasora sin indicios previos en la zona.
           </p>
           <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
             <a id="sci-link-biota" href="https://www.biodiversidadcanarias.es/biota/" target="_blank" rel="noopener" class="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-semibold hover:underline">BIOTA Canarias ↗</a>
@@ -261,28 +215,23 @@
           </div>
         </div>
 
-        <!-- Descripción (fácil de copiar/pegar) -->
+        <!-- Descripción -->
         <div class="space-y-1.5">
           <div class="flex items-center justify-between">
-            <label class="text-xs font-medium text-slate-500">Descripción, ficha o notas (puedes pegar texto de BIOTA, Wikipedia, etc.)</label>
+            <label class="text-xs font-medium text-slate-500">Descripción, ficha o notas (puedes pegar texto)</label>
             <div class="flex items-center gap-2">
-              <button type="button" id="btn-paste-desc" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1">
-                <i data-lucide="clipboard-paste" class="w-3.5 h-3.5"></i> Pegar
-              </button>
-              <button type="button" id="btn-copy-desc" class="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:underline flex items-center gap-1">
-                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar
-              </button>
+              <button type="button" id="btn-paste-desc" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">📋 Pegar</button>
+              <button type="button" id="btn-copy-desc" class="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:underline">📄 Copiar</button>
             </div>
           </div>
-          <textarea id="inp-desc" rows="4" placeholder="Escribe o pega aquí la descripción, rasgos, coloración (macho/hembra), comportamiento, hábitat o cualquier nota..." class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+          <textarea id="inp-desc" rows="4" placeholder="Escribe o pega aquí la descripción, rasgos (macho/hembra), comportamiento, hábitat o notas..." class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
           <p id="dimorphism-hint" class="text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 rounded-lg px-3 py-2 border border-slate-200/70 dark:border-slate-700/70">
-            💡 <b>Guía rápida de dimorfismo:</b> al revisar tu foto o descripción, fíjate si hay diferencias claras de color, tamaño, plumaje, aletas o estructuras reproductoras entre sexos, o si ambos sexos son iguales (o si en muchas plantas/invertebrados no aplica).
+            💡 <b>Dimorfismo sexual:</b> revisa si existen diferencias claras de color, tamaño, plumaje o aletas entre sexos, o marca <i>No hay dimorfismo sexual / No aplica</i> si ambos sexos son iguales.
           </p>
         </div>
 
-        <!-- Multimedia: Foto y Audio -->
+        <!-- Foto y Audio -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Foto -->
           <div class="space-y-2">
             <div class="flex items-center justify-between">
               <label class="text-xs font-medium text-slate-500">Foto (opcional)</label>
@@ -290,15 +239,11 @@
             </div>
             <label class="block border-2 border-dashed border-emerald-400/60 dark:border-emerald-700 rounded-2xl p-4 text-center cursor-pointer hover:bg-emerald-50/40 dark:hover:bg-emerald-950/20 transition">
               <input type="file" id="inp-photo" accept="image/*" class="hidden" />
-              <div id="photo-placeholder" class="space-y-1.5 py-2">
-                <i data-lucide="image-plus" class="w-8 h-8 mx-auto text-emerald-600"></i>
-                <p class="font-medium text-xs">Subir foto o hacer con cámara</p>
-              </div>
+              <div id="photo-placeholder" class="py-3 text-xs font-medium text-emerald-700 dark:text-emerald-400">📷 Subir foto o hacer con cámara</div>
               <img id="photo-preview" class="hidden max-h-48 mx-auto rounded-xl object-contain shadow" alt="Vista previa" />
             </label>
           </div>
 
-          <!-- Audio -->
           <div class="space-y-2">
             <div class="flex items-center justify-between">
               <label class="text-xs font-medium text-slate-500">Audio / Sonido (opcional)</label>
@@ -306,9 +251,7 @@
             </div>
             <div class="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 bg-slate-50 dark:bg-slate-800/50 space-y-3">
               <div class="flex flex-wrap items-center gap-2">
-                <button type="button" id="btn-record-audio" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-semibold px-3 py-2 rounded-xl flex items-center justify-center gap-1.5 text-xs shadow">
-                  <i data-lucide="mic" class="w-4 h-4"></i> <span id="rec-label">Grabar</span>
-                </button>
+                <button type="button" id="btn-record-audio" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-semibold px-3 py-2 rounded-xl text-xs shadow">🎙️ <span id="rec-label">Grabar</span></button>
                 <span id="rec-timer" class="text-xs font-mono text-slate-500 hidden">00:00</span>
                 <label class="flex-1 cursor-pointer bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 px-3 py-2 rounded-xl text-xs font-semibold text-center">
                   Subir audio
@@ -324,12 +267,8 @@
         <!-- Ubicación y Fecha -->
         <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
           <div class="flex items-center justify-between">
-            <h3 class="font-semibold text-xs uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <i data-lucide="compass" class="w-4 h-4 text-emerald-600"></i> Ubicación y Fecha
-            </h3>
-            <button type="button" id="btn-gps" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1">
-              <i data-lucide="locate-fixed" class="w-3.5 h-3.5"></i> Usar GPS
-            </button>
+            <h3 class="font-semibold text-xs uppercase tracking-wider text-slate-500">🧭 Ubicación y Fecha</h3>
+            <button type="button" id="btn-gps" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">📍 Usar GPS</button>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -350,9 +289,7 @@
               <label class="block text-xs text-slate-500 mb-1">Pueblo / Localidad / Zona</label>
               <div class="flex gap-1.5">
                 <input type="text" id="inp-zone" placeholder="Ej: Anaga, Corralejo, El Médano..." class="flex-1 min-w-0 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm" />
-                <button type="button" id="btn-geocode" class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1">
-                  <i data-lucide="search" class="w-3.5 h-3.5"></i> Buscar
-                </button>
+                <button type="button" id="btn-geocode" class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-xl">Buscar</button>
               </div>
             </div>
             <div>
@@ -369,8 +306,8 @@
           </div>
         </div>
 
-        <button type="submit" id="btn-save-record" class="w-full bg-forest-900 hover:bg-emerald-800 text-white font-semibold py-3 px-4 rounded-xl shadow flex items-center justify-center gap-2 transition">
-          <i data-lucide="save" class="w-4 h-4"></i> <span id="btn-save-label">Guardar en Mi Almacén</span>
+        <button type="submit" id="btn-save-record" class="w-full bg-forest-900 hover:bg-emerald-800 text-white font-semibold py-3 px-4 rounded-xl shadow transition">
+          💾 <span id="btn-save-label">Guardar en Mi Almacén</span>
         </button>
       </form>
     </section>
@@ -433,14 +370,12 @@
     <section id="tab-mapa" class="tab-panel space-y-3">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex flex-wrap gap-1.5">
-          <button data-filter="all" class="map-filter-btn bg-forest-900 text-white text-xs font-semibold px-3 py-1.5 rounded-full">Todas</button>
-          <button data-filter="Endémica" class="map-filter-btn bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium px-3 py-1.5 rounded-full">🟢 Endémicas</button>
-          <button data-filter="Autóctona" class="map-filter-btn bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium px-3 py-1.5 rounded-full">🔵 Autóctonas</button>
-          <button data-filter="Invasora" class="map-filter-btn bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium px-3 py-1.5 rounded-full">🔴 Invasoras</button>
+          <button type="button" data-filter="all" class="map-filter-btn bg-forest-900 text-white text-xs font-semibold px-3 py-1.5 rounded-full">Todas</button>
+          <button type="button" data-filter="Endémica" class="map-filter-btn bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium px-3 py-1.5 rounded-full">🟢 Endémicas</button>
+          <button type="button" data-filter="Autóctona" class="map-filter-btn bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium px-3 py-1.5 rounded-full">🔵 Autóctonas</button>
+          <button type="button" data-filter="Invasora" class="map-filter-btn bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium px-3 py-1.5 rounded-full">🔴 Invasoras</button>
         </div>
-        <button id="btn-toggle-layer" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm">
-          <i data-lucide="layers" class="w-3.5 h-3.5"></i> <span id="layer-label">Satélite</span>
-        </button>
+        <button type="button" id="btn-toggle-layer" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold px-3 py-1.5 rounded-xl shadow-sm">🛰️ <span id="layer-label">Satélite</span></button>
       </div>
       <div id="map" class="rounded-2xl overflow-hidden shadow border border-slate-200 dark:border-slate-800"></div>
     </section>
@@ -448,9 +383,7 @@
     <!-- ================= TAB 4: AJUSTES ================= -->
     <section id="tab-ajustes" class="tab-panel space-y-4">
       <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-4">
-        <h2 class="font-semibold text-base flex items-center gap-2">
-          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-emerald-600"></i> Preferencias
-        </h2>
+        <h2 class="font-semibold text-base">⚙️ Preferencias</h2>
 
         <div class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
           <div>
@@ -485,18 +418,16 @@
       </div>
 
       <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-3">
-        <h2 class="font-semibold text-base flex items-center gap-2">
-          <i data-lucide="database" class="w-4 h-4 text-emerald-600"></i> Copias de Seguridad (Almacén Local)
-        </h2>
-        <p class="text-xs text-slate-500">Tus fotos, audios y notas se guardan en la memoria interna del navegador (IndexedDB). Haz una copia en JSON si cambias de móvil o PC.</p>
+        <h2 class="font-semibold text-base">💾 Copias de Seguridad (Almacén Local)</h2>
+        <p class="text-xs text-slate-500">Tus fotos, audios y notas se guardan en la memoria interna del navegador. Haz una copia en JSON si cambias de móvil o PC.</p>
         <div class="flex flex-wrap gap-2">
-          <button id="btn-export-json" class="bg-slate-800 dark:bg-slate-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl">Exportar copia completa (JSON)</button>
-          <button id="btn-export-csv" class="bg-emerald-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl">Exportar tabla (CSV)</button>
+          <button type="button" id="btn-export-json" class="bg-slate-800 dark:bg-slate-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl">Exportar copia completa (JSON)</button>
+          <button type="button" id="btn-export-csv" class="bg-emerald-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl">Exportar tabla (CSV)</button>
           <label class="cursor-pointer bg-slate-200 dark:bg-slate-800 text-xs font-semibold px-4 py-2.5 rounded-xl">
             Importar JSON
             <input type="file" id="input-import-json" accept=".json" class="hidden" />
           </label>
-          <button id="btn-clear-data" class="bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 text-xs font-semibold px-4 py-2.5 rounded-xl ml-auto">Vaciar almacén</button>
+          <button type="button" id="btn-clear-data" class="bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 text-xs font-semibold px-4 py-2.5 rounded-xl ml-auto">Vaciar almacén</button>
         </div>
       </div>
 
@@ -526,9 +457,7 @@
           <h3 id="mod-common" class="text-xl font-bold leading-tight"></h3>
           <p id="mod-sci" class="text-sm italic text-slate-500"></p>
         </div>
-        <button id="btn-close-modal" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button type="button" id="btn-close-modal" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold">✕</button>
       </div>
 
       <img id="mod-photo" class="hidden w-full max-h-72 object-contain rounded-xl bg-slate-100 dark:bg-slate-800" alt="Foto del registro" />
@@ -542,18 +471,16 @@
       <div class="bg-slate-50 dark:bg-slate-800/70 rounded-xl p-3.5 space-y-2">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500">Descripción / Notas</span>
-          <button id="btn-mod-copy" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1">
-            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar texto
-          </button>
+          <button type="button" id="btn-mod-copy" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline">📋 Copiar texto</button>
         </div>
         <p id="mod-desc" class="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 dark:text-slate-200"></p>
       </div>
 
       <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
         <a id="mod-biota" target="_blank" rel="noopener" class="text-xs font-semibold px-3 py-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 hover:underline">Buscar en BIOTA ↗</a>
-        <button id="btn-mod-map" class="text-xs font-semibold px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700">Ver en mapa</button>
-        <button id="btn-mod-edit" class="text-xs font-semibold px-3 py-2 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-300">Editar</button>
-        <button id="btn-mod-delete" class="text-xs font-semibold px-3 py-2 rounded-xl bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 ml-auto">Eliminar</button>
+        <button type="button" id="btn-mod-map" class="text-xs font-semibold px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700">Ver en mapa</button>
+        <button type="button" id="btn-mod-edit" class="text-xs font-semibold px-3 py-2 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-300">Editar</button>
+        <button type="button" id="btn-mod-delete" class="text-xs font-semibold px-3 py-2 rounded-xl bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 ml-auto">Eliminar</button>
       </div>
     </div>
   </div>
@@ -561,204 +488,28 @@
   <script>
     // ================= BASE DE DATOS INTERNA DE ESPECIES CANARIAS =================
     const CANARY_DB = [
-      {
-        nombre_comun: 'Pinzón azul de Tenerife', nombre_cientifico: 'Fringilla teydea', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica',
-        estado: 'Casi amenazada (NT)', islas: ['Tenerife'], meses: 'Abril a agosto (residente todo el año)',
-        curiosidad: 'Su pico es más grueso que el del pinzón común porque evolucionó para abrir las duras piñas del pino canario y sacar sus piñones.',
-        clave: 'El macho es azul pizarra uniforme sin franjas blancas llamativas en las alas. La hembra es gris parduzco con dos tenues barras alares.',
-        donde: 'Pinares de corona forestal de Tenerife entre 1.000 y 2.000 m (Vilaflor, Chío, La Esperanza).',
-        dieta: 'Piñones de pino canario todo el año e insectos durante la cría.',
-        repro: 'Cría de mayo a julio; nido en copa en ramas altas de pino (2 huevos).'
-      },
-      {
-        nombre_comun: 'Tajinaste rojo', nombre_cientifico: 'Echium wildpretii', tipo: 'Planta', habitat: 'Terrestre', origen: 'Endémica',
-        estado: 'Protegida / Catálogo Canario', islas: ['Tenerife', 'La Palma'], meses: 'Mayo y junio (floración)',
-        curiosidad: 'Es monocárpica: pasa su primer año como roseta de hojas plateadas, al segundo levanta una torre de hasta 3 metros con miles de flores y muere dejando semillas.',
-        clave: 'Inflorescencia cónica gigante de flores rojo coral y hojas cubiertas de pelillos blancos que la protegen del sol y las heladas.',
-        donde: 'Parque Nacional del Teide y alta montaña de Tenerife (1.600 - 2.200 m).',
-        dieta: 'Fotosíntesis; produce abundante néctar vital para la abeja negra canaria.',
-        repro: 'Floración explosiva en mayo-junio; polinizada por insectos y aves.'
-      },
-      {
-        nombre_comun: 'Angelote', nombre_cientifico: 'Squatina squatina', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona',
-        estado: 'En peligro crítico (CR)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Noviembre a marzo (aguas someras)',
-        curiosidad: 'Aunque parece una raya por su cuerpo plano, es un tiburón. Canarias es su último gran refugio reproductor en el mundo.',
-        clave: 'Aletas pectorales anchas separadas de la cabeza, ojos dorsales y branquias en los laterales.',
-        donde: 'Fondos arenosos costeros de 2 a 50 m de profundidad, semienterrado.',
-        dieta: 'Depredador de emboscada: peces planos, crustáceos y moluscos.',
-        repro: 'Ovovivíparo; pare entre 7 y 25 crías en zonas costeras protegidas.'
-      },
-      {
-        nombre_comun: 'Guirre / Alimoche canario', nombre_cientifico: 'Neophron percnopterus majorensis', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica',
-        estado: 'En peligro (EN)', islas: ['Fuerteventura', 'Lanzarote'], meses: 'Todo el año',
-        curiosidad: 'Subespecie única de Canarias, más grande que el alimoche peninsular y sedentaria: no migra a África.',
-        clave: 'En vuelo se distingue por su cola en cuña, alas blancas con borde negro y cara amarilla en adultos.',
-        donde: 'Riscos, barrancos áridos y zonas ganaderas de Fuerteventura y sur de Lanzarote.',
-        dieta: 'Carroñero: restos de ganado, pequeños vertebrados muertos e insectos.',
-        repro: 'Nidifica en cuevas de riscos entre febrero y mayo (1-2 pollos).'
-      },
-      {
-        nombre_comun: 'Vieja canaria', nombre_cientifico: 'Sparisoma cretense', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona',
-        estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año',
-        curiosidad: 'Sus dientes están fusionados en forma de "pico de loro" para raspar algas de las rocas, produciendo arena fina.',
-        clave: 'Hembras rojo brillante con mancha gris tras la cabeza y amarilla en la cola; machos grisáceos.',
-        donde: 'Fondos rocosos costeros y sebadales de 1 a 40 m de profundidad.',
-        dieta: 'Algas incrustantes y pequeños invertebrados.',
-        repro: 'Puesta pelágica en verano (julio a septiembre).'
-      },
-      {
-        nombre_comun: 'Lagarto tizón', nombre_cientifico: 'Gallotia galloti', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica',
-        estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'La Palma'], meses: 'Marzo a octubre (más activo)',
-        curiosidad: 'Es un gran dispersor de semillas: al comer frutos de tabaibas y tuneras ayuda a regenerar la flora local.',
-        clave: 'Machos oscuros con manchas azul eléctrico en costados y mejillas; hembras y jóvenes pardos rayados.',
-        donde: 'Desde la costa hasta más de 3.000 m en el Teide, en muros de piedra y senderos.',
-        dieta: 'Omnívoro: insectos, flores, hojas y frutos dulces.',
-        repro: 'Ovíparo; celo en primavera y puesta de 2 a 6 huevos en verano.'
-      },
-      {
-        nombre_comun: 'Cardón canario', nombre_cientifico: 'Euphorbia canariensis', tipo: 'Planta', habitat: 'Terrestre', origen: 'Endémica',
-        estado: 'Protegida / Catálogo Canario', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'La Palma', 'La Gomera', 'El Hierro'], meses: 'Todo el año (flores en primavera)',
-        curiosidad: 'Aunque parece un cactus, no lo es: es una euforbia cuya savia blanca (látex) es muy irritante y la protege de herbívoros.',
-        clave: 'Tallos columnares verdes con 4 a 6 aristas cubiertas de espinas pares, creciendo en grandes candelabros.',
-        donde: 'Zonas bajas, soleadas y áridas del cardonal-tabaibal (0 - 600 m).',
-        dieta: 'Fotosíntesis adaptada a sequía extrema (metabolismo CAM).',
-        repro: 'Pequeñas flores rojizas en el extremo de los tallos en primavera.'
-      },
-      {
-        nombre_comun: 'Pardela cenicienta', nombre_cientifico: 'Calonectris borealis', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona',
-        estado: 'Vulnerable (VU)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Febrero a noviembre',
-        curiosidad: 'Cruza todo el Atlántico hasta las costas de Brasil y Sudáfrica en invierno y vuelve cada año a la misma cueva en Canarias.',
-        clave: 'Vuelo rasante sobre las olas alternando planeos rígidos; canto nocturno muy característico y nasal.',
-        donde: 'Acantilados costeros, islotes y mar abierto al atardecer.',
-        dieta: 'Peces pelágicos pequeños (sardina, caballa) y calamares.',
-        repro: 'Pone un único huevo en primavera; el pollo sale del nido en otoño.'
-      },
-      {
-        nombre_comun: 'Drago canario', nombre_cientifico: 'Dracaena draco', tipo: 'Planta', habitat: 'Terrestre', origen: 'Autóctona',
-        estado: 'Vulnerable (VU)', islas: ['Tenerife', 'Gran Canaria', 'La Palma'], meses: 'Todo el año (floración estival)',
-        curiosidad: 'No es un árbol típico con anillos de crecimiento: su edad se calcula contando las ramificaciones de su copa, que aparecen tras cada floración.',
-        clave: 'Tronco grisáceo plateado, copa en forma de paraguas con hojas rígidas en roseta y savia rojiza ("sangre de drago").',
-        donde: 'Riscos del bosque termófilo (200 - 600 m) y ejemplares cultivados en pueblos.',
-        dieta: 'Fotosíntesis; muy resistente a la sequía.',
-        repro: 'Flores blanco-verdosas en panículas y frutos anaranjados comidos por aves.'
-      },
-      {
-        nombre_comun: 'Hubara canaria', nombre_cientifico: 'Chlamydotis undulata fuertaventurae', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica',
-        estado: 'En peligro (EN)', islas: ['Fuerteventura', 'Lanzarote', 'La Graciosa'], meses: 'Todo el año (celo en invierno)',
-        curiosidad: 'Durante el cortejo, el macho despliega un abanico de plumas blancas en el cuello y corre en zigzag por las llanuras semidesérticas.',
-        clave: 'Ave terrestre grande y esbelta de tonos arenosos miméticos con una fina línea negra bajando por el cuello.',
-        donde: 'Llanuras áridas, jables y zonas esteparias abiertas.',
-        dieta: 'Omnívora: brotes tiernos, semillas, escarabajos y pequeños lagartos.',
-        repro: 'Anida directamente en el suelo entre febrero y abril (2-3 huevos).'
-      },
-      {
-        nombre_comun: 'Tabaiba dulce', nombre_cientifico: 'Euphorbia balsamifera', tipo: 'Planta', habitat: 'Terrestre', origen: 'Autóctona',
-        estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año (brotes en invierno-primavera)',
-        curiosidad: 'A diferencia del cardón o la tabaiba amarga, su látex no es tóxico; en el pasado se usaba para hacer chicle natural y como emplasto tradicional.',
-        clave: 'Arbusto redondeado y leñoso de tallos lisos sin espinas y hojas alargadas agrupadas en las puntas.',
-        donde: 'Zonas bajas, costeras y áridas de matorral xerofítico (0 - 700 m).',
-        dieta: 'Fotosíntesis adaptada a ambientes secos y soleados.',
-        repro: 'Pequeñas flores amarillo-verdosas en los extremos de las ramas.'
-      },
-      {
-        nombre_comun: 'Perenquén majorero', nombre_cientifico: 'Tarentola angustimentalis', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica',
-        estado: 'Preocupación menor (LC)', islas: ['Fuerteventura', 'Lanzarote', 'La Graciosa'], meses: 'Marzo a noviembre (activo al atardecer y de noche)',
-        curiosidad: 'Tiene almohadillas laminadas bajo los dedos que le permiten caminar por superficies verticales e incluso boca abajo en techos o rocas lisas.',
-        clave: 'Geco pequeño y robusto de piel granulada parda o grisácea con bandas transversales oscuras variables.',
-        donde: 'Muros de piedra seca, casas, malpaíses, dunas y barrancos de las islas orientales.',
-        dieta: 'Insectos y artrópodos nocturnos (polillas, escarabajos, hormigas).',
-        repro: 'Ovíparo; las hembras ponen 1 o 2 huevos de cáscara calcárea en grietas o bajo piedras.'
-      },
-      {
-        nombre_comun: 'Brecillo / Brezo canario', nombre_cientifico: 'Erica arborea', tipo: 'Planta', habitat: 'Terrestre', origen: 'Autóctona',
-        estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'La Palma', 'La Gomera', 'El Hierro'], meses: 'Febrero a mayo (floración)',
-        curiosidad: 'Su raíz engrosada ("zueca") resiste muy bien el fuego y los cortes, rebrotando con fuerza tras incendios forestales; de ella se fabrican pipas de fumar de alta calidad.',
-        clave: 'Arbusto o arbolillo de hojas muy finas y estrechas en verticilos y multitud de diminutas flores blancas o rosadas.',
-        donde: 'Monteverde (fayal-brezal) y bordes húmedos del pinar.',
-        dieta: 'Fotosíntesis; flores muy visitadas por abejas y otros polinizadores.',
-        repro: 'Floración abundante en primavera con producción de diminutas semillas.'
-      },
-      {
-        nombre_comun: 'Fula negra', nombre_cientifico: 'Abudefduf luridus', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona',
-        estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año (más activa en verano)',
-        curiosidad: 'Los machos cuidan y ventilan activamente los nidos de huevos pegados a las rocas y defienden su territorio con valentía frente a peces mucho mayores.',
-        clave: 'Cuerpo ovalado de color marrón oscuro casi negro, aleta caudal ligeramente ahorquillada y comportamiento muy territorial.',
-        donde: 'Fondos rocosos costeros, charcos grandes y zonas de snorkel o buceo hasta 25 m.',
-        dieta: 'Omnívora: algas filamentosas y plancton/pequeños crustáceos.',
-        repro: 'Puesta bentónica sobre rocas en primavera y verano, vigilada por el macho.'
-      },
-      {
-        nombre_comun: 'Cernícalo vulgar canario', nombre_cientifico: 'Falco tinnunculus canariensis', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica',
-        estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año',
-        curiosidad: 'Es famoso por "cernirse": se queda suspendido en el aire batiendo las alas rápidamente mientras escudriña el suelo en busca de presas.',
-        clave: 'Pequeña rapaz de alas puntiagudas; el macho tiene cabeza y cola gris azulado, y la hembra dorso rojizo barrado de oscuro.',
-        donde: 'Riscos, barrancos, campos agrícolas, zonas costeras e incluso entornos urbanos.',
-        dieta: 'Lagartos, perenquenes, ratones, grandes insectos y aves pequeñas.',
-        repro: 'Cría en repisas de riscos o huecos de edificios entre febrero y junio.'
-      },
-      {
-        nombre_comun: 'Seña / Morena picada', nombre_cientifico: 'Gymnothorax miliaris', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona',
-        estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año',
-        curiosidad: 'Abre y cierra la boca constantemente no para morder, sino para hacer pasar agua oxigenada por sus branquias.',
-        clave: 'Cuerpo serpentiforme sin aletas pectorales, de color marrón oscuro salpicado de numerosos puntos amarillentos o blanquecinos.',
-        donde: 'Grietas y cuevas de fondos rocosos costeros durante el día; sale a cazar de noche.',
-        dieta: 'Carnívora: cangrejos, pulpos pequeños, camarones y peces de roca.',
-        repro: 'Desove pelágico en aguas cálidas con larvas transparentes en forma de cinta (leptocéfalos).'
-      },
-      {
-        nombre_comun: 'Pino canario', nombre_cientifico: 'Pinus canariensis', tipo: 'Planta', habitat: 'Terrestre', origen: 'Endémica',
-        estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'La Palma', 'El Hierro'], meses: 'Todo el año',
-        curiosidad: 'Sus acículas ("pinillo") atrapan la humedad de la niebla y la gotean al suelo, recargando los acuíferos de las islas; además rebrota si se quema el tronco.',
-        clave: 'Hojas largas y finas reunidas de 3 en 3 en cada fascículo, corteza rojiza gruesa y piñas grandes y leñosas.',
-        donde: 'Franja de corona forestal entre 800 y 2.000 m de altitud.',
-        dieta: 'Fotosíntesis; madera muy densa y resinosa (tea).',
-        repro: 'Conos masculinos en primavera y piñas que maduran en su segundo año.'
-      },
-      {
-        nombre_comun: 'Chucho negro', nombre_cientifico: 'Taeniura grabata', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona',
-        estado: 'Protegida / Catálogo Canario', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año',
-        curiosidad: 'Tiene un aguijón venenoso en la base de su cola larga como mecanismo defensivo; es tranquilo y suele descansar sobre la arena.',
-        clave: 'Disco redondeado marrón grisáceo oscuro y cola larga con una banda o membrana característica.',
-        donde: 'Fondos arenosos y mixtos costeros (5 a 100 m), frecuente en zonas de buceo.',
-        dieta: 'Invertebrados bentónicos: cangrejos, camarones, gusanos y moluscos.',
-        repro: 'Vivíparo aplacentario; las crías nacen ya formadas tras varios meses de gestación.'
-      },
-      {
-        nombre_comun: 'Rabo de gato', nombre_cientifico: 'Cenchrus setaceus', tipo: 'Planta', habitat: 'Terrestre', origen: 'Invasora',
-        estado: 'Invasora (Catálogo Español / RedEXOS)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro'], meses: 'Todo el año',
-        curiosidad: 'Gramínea invasora muy agresiva que desplaza la flora autóctona y aumenta el riesgo de incendio en laderas y barrancos.',
-        clave: 'Espigas plumosas alargadas de tono rosado o blanquecino y hojas estrechas ásperas en macollas densas.',
-        donde: 'Bordes de carreteras, barrancos, taludes y matorrales alterados.',
-        dieta: 'Fotosíntesis; gran producción de semillas dispersadas por el viento.',
-        repro: 'Floración casi continua en zonas cálidas de Canarias.'
-      },
-      {
-        nombre_comun: 'Culebra real de California', nombre_cientifico: 'Lampropeltis californiae', tipo: 'Animal', habitat: 'Terrestre', origen: 'Invasora',
-        estado: 'Invasora (Alerta temprana RedEXOS)', islas: ['Gran Canaria'], meses: 'Marzo a octubre (más activa)',
-        curiosidad: 'Depredador introducido que amenaza gravemente al lagarto gigante de Gran Canaria, a la lisa y al perenquén.',
-        clave: 'Serpiente constrictora de patrón anillado blanco/amarillo y negro o con línea dorsal clara (fase albina o rayada).',
-        donde: 'Barrancos, cultivos y zonas de matorral de Gran Canaria (cualquier avistamiento fuera debe notificarse de inmediato).',
-        dieta: 'Lagartos endémicos, perenquenes, lisas, micromamíferos y aves.',
-        repro: 'Ovípara; puesta de 5 a 12 huevos en primavera-verano.'
-      },
-      {
-        nombre_comun: 'Tunera india / Chumbera', nombre_cientifico: 'Opuntia maxima', tipo: 'Planta', habitat: 'Terrestre', origen: 'Invasora',
-        estado: 'Invasora (Catálogo Español)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro'], meses: 'Todo el año',
-        curiosidad: 'Introducida históricamente para el cultivo de la cochinilla, hoy invade laderas de cardonal-tabaibal y barrancos.',
-        clave: 'Palas (cladodios) carnosas ovaladas con espinas y frutos anaranjados o rojizos (tunos).',
-        donde: 'Zonas bajas y medianías secas de todas las islas.',
-        dieta: 'Fotosíntesis CAM resistente a sequía.',
-        repro: 'Flores amarillas en primavera y reproducción vegetativa muy fácil por fragmentos de pala.'
-      },
-      {
-        nombre_comun: 'Cotorra de Kramer', nombre_cientifico: 'Psittacula krameri', tipo: 'Animal', habitat: 'Terrestre', origen: 'Invasora',
-        estado: 'Invasora (Catálogo Español)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote'], meses: 'Todo el año',
-        curiosidad: 'Compite por huecos de nidificación con aves autóctonas y causa daños en palmerales y cultivos.',
-        clave: 'Loro verde brillante de cola muy larga y pico rojo; el macho adulto presenta un collar negro y rosado.',
-        donde: 'Parques urbanos, palmerales y zonas agrícolas costeras.',
-        dieta: 'Frutos, semillas, brotes y flores.',
-        repro: 'Nidifica en cavidades de árboles y palmeras entre febrero y junio.'
-      }
+      { nombre_comun: 'Pinzón azul de Tenerife', nombre_cientifico: 'Fringilla teydea', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica', estado: 'Casi amenazada (NT)', islas: ['Tenerife'], meses: 'Abril a agosto (residente todo el año)', curiosidad: 'Su pico es más grueso que el del pinzón común para abrir las duras piñas del pino canario.', clave: 'Macho azul pizarra uniforme sin franjas blancas; hembra gris parduzco.', donde: 'Pinares de Tenerife (1.000 - 2.000 m).', dieta: 'Piñones de pino canario e insectos.', repro: 'Mayo a julio (2 huevos).' },
+      { nombre_comun: 'Tajinaste rojo', nombre_cientifico: 'Echium wildpretii', tipo: 'Planta', habitat: 'Terrestre', origen: 'Endémica', estado: 'Protegida / Catálogo Canario', islas: ['Tenerife', 'La Palma'], meses: 'Mayo y junio (floración)', curiosidad: 'Planta monocárpica: al segundo año levanta una torre de hasta 3 metros con miles de flores rojas y muere dejando semillas.', clave: 'Inflorescencia cónica gigante rojo coral y hojas plateadas peludas.', donde: 'Parque Nacional del Teide y cumbre.', dieta: 'Fotosíntesis; néctar vital para polinizadores.', repro: 'Floración explosiva en primavera-verano.' },
+      { nombre_comun: 'Angelote', nombre_cientifico: 'Squatina squatina', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona', estado: 'En peligro crítico (CR)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Noviembre a marzo', curiosidad: 'Es un tiburón de cuerpo aplanado; Canarias es su último gran refugio reproductor.', clave: 'Aletas pectorales anchas separadas de la cabeza y branquias laterales.', donde: 'Fondos arenosos costeros (2 - 50 m).', dieta: 'Peces planos, crustáceos y moluscos.', repro: 'Ovovivíparo (7 a 25 crías).' },
+      { nombre_comun: 'Guirre / Alimoche canario', nombre_cientifico: 'Neophron percnopterus majorensis', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica', estado: 'En peligro (EN)', islas: ['Fuerteventura', 'Lanzarote'], meses: 'Todo el año', curiosidad: 'Subespecie única de Canarias, sedentaria y más grande que el alimoche peninsular.', clave: 'Cola en cuña, alas blancas con borde negro y cara amarilla en adultos.', donde: 'Riscos y barrancos áridos de Fuerteventura y Lanzarote.', dieta: 'Carroñero.', repro: 'Febrero a mayo en cuevas de riscos.' },
+      { nombre_comun: 'Vieja canaria', nombre_cientifico: 'Sparisoma cretense', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona', estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año', curiosidad: 'Dientes fusionados en pico de loro para raspar algas de las rocas.', clave: 'Hembras rojo brillante con mancha gris; machos grisáceos.', donde: 'Fondos rocosos costeros y sebadales.', dieta: 'Algas e invertebrados.', repro: 'Verano (julio a septiembre).' },
+      { nombre_comun: 'Lagarto tizón', nombre_cientifico: 'Gallotia galloti', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica', estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'La Palma'], meses: 'Marzo a octubre', curiosidad: 'Gran dispersor de semillas de flora autóctona.', clave: 'Machos oscuros con manchas azul eléctrico en costados y mejillas; hembras pardas rayadas.', donde: 'Desde la costa hasta el Teide.', dieta: 'Omnívoro: insectos, flores y frutos.', repro: 'Ovíparo en verano.' },
+      { nombre_comun: 'Cardón canario', nombre_cientifico: 'Euphorbia canariensis', tipo: 'Planta', habitat: 'Terrestre', origen: 'Endémica', estado: 'Protegida / Catálogo Canario', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'La Palma', 'La Gomera', 'El Hierro'], meses: 'Todo el año', curiosidad: 'Euforbia suculenta con látex blanco irritante que la protege de herbívoros.', clave: 'Tallos columnares verdes de 4-6 aristas con espinas pares.', donde: 'Cardonal-tabaibal (0 - 600 m).', dieta: 'Fotosíntesis CAM.', repro: 'Flores rojizas en primavera.' },
+      { nombre_comun: 'Pardela cenicienta', nombre_cientifico: 'Calonectris borealis', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona', estado: 'Vulnerable (VU)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Febrero a noviembre', curiosidad: 'Cruza el Atlántico hasta Brasil y Sudáfrica y vuelve cada año a la misma cueva.', clave: 'Planeo rasante sobre las olas y canto nocturno nasal.', donde: 'Acantilados costeros e islotes.', dieta: 'Peces pelágicos y calamares.', repro: 'Un huevo en primavera; pollo sale en otoño.' },
+      { nombre_comun: 'Drago canario', nombre_cientifico: 'Dracaena draco', tipo: 'Planta', habitat: 'Terrestre', origen: 'Autóctona', estado: 'Vulnerable (VU)', islas: ['Tenerife', 'Gran Canaria', 'La Palma'], meses: 'Todo el año', curiosidad: 'Su edad se estima contando las ramificaciones de su copa tras cada floración.', clave: 'Tronco gris plateado, copa en paraguas y savia rojiza.', donde: 'Bosque termófilo (200 - 600 m).', dieta: 'Fotosíntesis.', repro: 'Floración estival y frutos anaranjados.' },
+      { nombre_comun: 'Hubara canaria', nombre_cientifico: 'Chlamydotis undulata fuertaventurae', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica', estado: 'En peligro (EN)', islas: ['Fuerteventura', 'Lanzarote', 'La Graciosa'], meses: 'Todo el año', curiosidad: 'El macho despliega un abanico blanco en el cuello y corre en zigzag en el cortejo.', clave: 'Ave esteparia de tonos arenosos con línea negra en el cuello.', donde: 'Llanuras áridas y jables.', dieta: 'Omnívora: brotes, semillas e insectos.', repro: 'En el suelo entre febrero y abril.' },
+      { nombre_comun: 'Tabaiba dulce', nombre_cientifico: 'Euphorbia balsamifera', tipo: 'Planta', habitat: 'Terrestre', origen: 'Autóctona', estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año', curiosidad: 'Su látex no es tóxico y se usaba antiguamente como chicle natural.', clave: 'Arbusto leñoso sin espinas con hojas agrupadas en las puntas.', donde: 'Zonas bajas áridas (0 - 700 m).', dieta: 'Fotosíntesis.', repro: 'Flores amarillo-verdosas.' },
+      { nombre_comun: 'Perenquén majorero', nombre_cientifico: 'Tarentola angustimentalis', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica', estado: 'Preocupación menor (LC)', islas: ['Fuerteventura', 'Lanzarote', 'La Graciosa'], meses: 'Marzo a noviembre', curiosidad: 'Almohadillas adhesivas en los dedos para trepar por paredes lisas.', clave: 'Geco pardo-grisáceo de piel granulada con bandas oscuras.', donde: 'Muros de piedra, casas y malpaíses orientales.', dieta: 'Insectos nocturnos.', repro: '1-2 huevos bajo piedras.' },
+      { nombre_comun: 'Brecillo / Brezo canario', nombre_cientifico: 'Erica arborea', tipo: 'Planta', habitat: 'Terrestre', origen: 'Autóctona', estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'La Palma', 'La Gomera', 'El Hierro'], meses: 'Febrero a mayo', curiosidad: 'Rebrota con fuerza tras incendios gracias a su raíz engrosada (zueca).', clave: 'Hojas muy finas y diminutas flores blancas.', donde: 'Monteverde (fayal-brezal).', dieta: 'Fotosíntesis.', repro: 'Floración primaveral.' },
+      { nombre_comun: 'Fula negra', nombre_cientifico: 'Abudefduf luridus', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona', estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año', curiosidad: 'Los machos ventilan y defienden con valentía sus puestas en las rocas.', clave: 'Cuerpo ovalado marrón muy oscuro casi negro.', donde: 'Fondos rocosos costeros (0 - 25 m).', dieta: 'Algas y plancton.', repro: 'Primavera y verano sobre rocas.' },
+      { nombre_comun: 'Cernícalo vulgar canario', nombre_cientifico: 'Falco tinnunculus canariensis', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica', estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año', curiosidad: 'Se mantiene suspendido en el aire batiendo las alas ("cernirse") para localizar presas.', clave: 'Macho con cabeza y cola gris azulado; hembra rojiza barrada.', donde: 'Riscos, barrancos y campos.', dieta: 'Lagartos, ratones e insectos.', repro: 'Febrero a junio en riscos.' },
+      { nombre_comun: 'Seña / Morena picada', nombre_cientifico: 'Gymnothorax miliaris', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona', estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año', curiosidad: 'Abre y cierra la boca para bombear agua oxigenada hacia sus branquias.', clave: 'Cuerpo marrón oscuro salpicado de puntos amarillentos.', donde: 'Grietas rocosas costeras.', dieta: 'Crustáceos y peces pequeños.', repro: 'Desove pelágico.' },
+      { nombre_comun: 'Pino canario', nombre_cientifico: 'Pinus canariensis', tipo: 'Planta', habitat: 'Terrestre', origen: 'Endémica', estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'La Palma', 'El Hierro'], meses: 'Todo el año', curiosidad: 'Sus acículas condensan agua de la niebla y resiste el fuego rebrotando del tronco.', clave: 'Acículas largas agrupadas de 3 en 3 y corteza gruesa rojiza.', donde: 'Corona forestal (800 - 2.000 m).', dieta: 'Fotosíntesis.', repro: 'Piñas leñosas.' },
+      { nombre_comun: 'Chucho negro', nombre_cientifico: 'Taeniura grabata', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona', estado: 'Protegida / Catálogo Canario', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año', curiosidad: 'Posee aguijón defensivo en la cola y descansa semienterrado en la arena.', clave: 'Disco redondeado oscuro y cola larga con membrana.', donde: 'Fondos arenosos costeros.', dieta: 'Cangrejos, gusanos y moluscos.', repro: 'Vivíparo aplacentario.' },
+      { nombre_comun: 'Rabo de gato', nombre_cientifico: 'Cenchrus setaceus', tipo: 'Planta', habitat: 'Terrestre', origen: 'Invasora', estado: 'Invasora (Catálogo Español / RedEXOS)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro'], meses: 'Todo el año', curiosidad: 'Gramínea invasora muy agresiva que desplaza flora nativa y aumenta el riesgo de incendio.', clave: 'Espigas plumosas rosadas o blanquecinas.', donde: 'Bordes de carreteras y barrancos.', dieta: 'Fotosíntesis.', repro: 'Semillas dispersadas por el viento.' },
+      { nombre_comun: 'Culebra real de California', nombre_cientifico: 'Lampropeltis californiae', tipo: 'Animal', habitat: 'Terrestre', origen: 'Invasora', estado: 'Invasora (Alerta temprana RedEXOS)', islas: ['Gran Canaria'], meses: 'Marzo a octubre', curiosidad: 'Depredador invasor que amenaza al lagarto gigante de Gran Canaria y a la lisa.', clave: 'Serpiente anillada blanco/amarillo y negro o con línea dorsal clara.', donde: 'Barrancos y cultivos de Gran Canaria.', dieta: 'Lagartos, perenquenes, lisas y roedores.', repro: 'Ovípara (5 a 12 huevos).' },
+      { nombre_comun: 'Tunera india / Chumbera', nombre_cientifico: 'Opuntia maxima', tipo: 'Planta', habitat: 'Terrestre', origen: 'Invasora', estado: 'Invasora (Catálogo Español)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro'], meses: 'Todo el año', curiosidad: 'Invade laderas secas y desplaza al cardonal-tabaibal.', clave: 'Palas carnosas ovaladas con espinas y tunos anaranjados.', donde: 'Zonas bajas y medianías secas.', dieta: 'Fotosíntesis CAM.', repro: 'Reproducción vegetativa por palas.' },
+      { nombre_comun: 'Cotorra de Kramer', nombre_cientifico: 'Psittacula krameri', tipo: 'Animal', habitat: 'Terrestre', origen: 'Invasora', estado: 'Invasora (Catálogo Español)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote'], meses: 'Todo el año', curiosidad: 'Compite por cavidades de cría con aves locales y daña cultivos.', clave: 'Loro verde brillante de cola larga y pico rojo.', donde: 'Parques y palmerales costeros.', dieta: 'Frutos, semillas y brotes.', repro: 'Cavidades en palmeras y árboles.' }
     ];
 
     const ISLAND_COORDS = {
@@ -772,36 +523,53 @@
       'La Graciosa': [29.2517, -13.5042]
     };
 
-    // ================= INDEXEDDB STORAGE =================
+    // ================= STORAGE (IndexedDB + fallback automático) =================
     const DB_NAME = 'BioCanariasAlmacenDB';
-    const DB_VERSION = 1;
     const STORE_NAME = 'records';
+    const LS_RECORDS_FALLBACK = 'biocanarias_records_fallback_v1';
     let db = null;
+    let useFallbackStorage = false;
 
     function openDB() {
-      return new Promise((resolve, reject) => {
-        const req = indexedDB.open(DB_NAME, DB_VERSION);
-        req.onupgradeneeded = (e) => {
-          const d = e.target.result;
-          if (!d.objectStoreNames.contains(STORE_NAME)) {
-            d.createObjectStore(STORE_NAME, { keyPath: 'id' });
-          }
-        };
-        req.onsuccess = (e) => { db = e.target.result; resolve(db); };
-        req.onerror = (e) => reject(e.target.error);
+      return new Promise((resolve) => {
+        try {
+          if (!window.indexedDB) { useFallbackStorage = true; return resolve(null); }
+          const req = indexedDB.open(DB_NAME, 1);
+          req.onupgradeneeded = (e) => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains(STORE_NAME)) d.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          };
+          req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+          req.onerror = () => { useFallbackStorage = true; resolve(null); };
+        } catch {
+          useFallbackStorage = true;
+          resolve(null);
+        }
       });
     }
 
     function dbGetAll() {
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction(STORE_NAME, 'readonly');
-        const req = tx.objectStore(STORE_NAME).getAll();
-        req.onsuccess = () => resolve((req.result || []).sort((a, b) => b.id - a.id));
-        req.onerror = () => reject(req.error);
+      if (useFallbackStorage || !db) {
+        try { return Promise.resolve(JSON.parse(localStorage.getItem(LS_RECORDS_FALLBACK) || '[]')); }
+        catch { return Promise.resolve([]); }
+      }
+      return new Promise((resolve) => {
+        try {
+          const tx = db.transaction(STORE_NAME, 'readonly');
+          const req = tx.objectStore(STORE_NAME).getAll();
+          req.onsuccess = () => resolve((req.result || []).sort((a, b) => b.id - a.id));
+          req.onerror = () => resolve([]);
+        } catch { resolve([]); }
       });
     }
 
     function dbPut(record) {
+      if (useFallbackStorage || !db) {
+        const list = JSON.parse(localStorage.getItem(LS_RECORDS_FALLBACK) || '[]').filter(x => x.id !== record.id);
+        list.unshift(record);
+        localStorage.setItem(LS_RECORDS_FALLBACK, JSON.stringify(list));
+        return Promise.resolve();
+      }
       return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE_NAME, 'readwrite');
         const req = tx.objectStore(STORE_NAME).put(record);
@@ -811,6 +579,11 @@
     }
 
     function dbDelete(id) {
+      if (useFallbackStorage || !db) {
+        const list = JSON.parse(localStorage.getItem(LS_RECORDS_FALLBACK) || '[]').filter(x => x.id !== id);
+        localStorage.setItem(LS_RECORDS_FALLBACK, JSON.stringify(list));
+        return Promise.resolve();
+      }
       return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE_NAME, 'readwrite');
         const req = tx.objectStore(STORE_NAME).delete(id);
@@ -820,6 +593,10 @@
     }
 
     function dbClear() {
+      if (useFallbackStorage || !db) {
+        localStorage.removeItem(LS_RECORDS_FALLBACK);
+        return Promise.resolve();
+      }
       return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE_NAME, 'readwrite');
         const req = tx.objectStore(STORE_NAME).clear();
@@ -828,23 +605,18 @@
       });
     }
 
-    // ================= STATE =================
+    // ================= STATE & HELPERS =================
     const LS_SETTINGS = 'biocanarias_almacen_settings_v2';
-    let settings = Object.assign({
-      dark: false, defaultIsland: 'Tenerife', mapLayer: 'standard'
-    }, JSON.parse(localStorage.getItem(LS_SETTINGS) || '{}'));
-
+    let settings = Object.assign({ dark: false, defaultIsland: 'Tenerife', mapLayer: 'standard' }, JSON.parse(localStorage.getItem(LS_SETTINGS) || '{}'));
     let records = [];
     let editingId = null;
     let currentPhotoDataUrl = null;
     let currentAudioDataUrl = null;
     let currentModalRecord = null;
     let dailyIndex = Math.floor(Date.now() / 86400000) % CANARY_DB.length;
-
     let mediaRecorder = null, audioChunks = [], recInterval = null, recSeconds = 0;
     let map = null, standardLayer = null, satelliteLayer = null, activeLayerName = settings.mapLayer, markersGroup = null, activeMapFilter = 'all';
 
-    // ================= HELPERS =================
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -854,26 +626,22 @@
     }
 
     function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     function originBadgeClass(origin) {
       const o = (origin || '').toLowerCase();
-      if (o.includes('endémic') || o.includes('endemic')) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300';
+      if (o.includes('endémic')) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300';
       if (o.includes('invasor')) return 'bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-300';
-      if (o.includes('autócton') || o.includes('autocton')) return 'bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-300';
+      if (o.includes('autócton')) return 'bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-300';
       return 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300';
     }
 
     function originColor(origin) {
       const o = (origin || '').toLowerCase();
-      if (o.includes('endémic') || o.includes('endemic')) return '#10b981';
+      if (o.includes('endémic')) return '#10b981';
       if (o.includes('invasor')) return '#e11d48';
-      if (o.includes('autócton') || o.includes('autocton')) return '#0284c7';
+      if (o.includes('autócton')) return '#0284c7';
       return '#64748b';
     }
 
@@ -904,7 +672,7 @@
       document.getElementById('setting-maplayer').value = settings.mapLayer;
     }
 
-    // ================= DAILY SPECIES =================
+    // ================= ESPECIE DEL DÍA =================
     function renderDailySpecies() {
       const sp = CANARY_DB[dailyIndex];
       document.getElementById('daily-origin').textContent = sp.origen;
@@ -935,34 +703,23 @@
 
     document.getElementById('btn-daily-copy').addEventListener('click', () => {
       const sp = CANARY_DB[dailyIndex];
-      const txt = `${sp.nombre_comun} (${sp.nombre_cientifico})\nOrigen: ${sp.origen} · Hábitat: ${sp.habitat} · Estado: ${sp.estado}\nIslas: ${sp.islas.join(', ')} · Meses: ${sp.meses}\nCuriosidad: ${sp.curiosidad}\nClave de identificación: ${sp.clave}\nDónde verla: ${sp.donde}`;
+      const txt = `${sp.nombre_comun} (${sp.nombre_cientifico})\nOrigen: ${sp.origen} · Hábitat: ${sp.habitat} · Estado: ${sp.estado}\nIslas: ${sp.islas.join(', ')} · Meses: ${sp.meses}\nCuriosidad: ${sp.curiosidad}\nClave: ${sp.clave}`;
       copyToClipboard(txt, 'Ficha de la especie copiada');
     });
 
     // ================= CONSULTA POR NOMBRE CIENTÍFICO + ALARMA INVASORAS =================
     function updateSearchLinks(sciRaw, commonRaw) {
       const query = encodeURIComponent((sciRaw || commonRaw || '').trim());
-      document.getElementById('sci-link-biota').href = query
-        ? `https://www.biodiversidadcanarias.es/biota/especies?texto=${query}`
-        : 'https://www.biodiversidadcanarias.es/biota/';
-      document.getElementById('sci-link-exos').href = query
-        ? `https://www.biodiversidadcanarias.es/exos/especies?texto=${query}`
-        : 'https://www.biodiversidadcanarias.es/exos/';
-      document.getElementById('sci-link-inat').href = query
-        ? `https://www.inaturalist.org/search?q=${query}`
-        : 'https://www.inaturalist.org/';
+      document.getElementById('sci-link-biota').href = query ? `https://www.biodiversidadcanarias.es/biota/especies?texto=${query}` : 'https://www.biodiversidadcanarias.es/biota/';
+      document.getElementById('sci-link-exos').href = query ? `https://www.biodiversidadcanarias.es/exos/especies?texto=${query}` : 'https://www.biodiversidadcanarias.es/exos/';
+      document.getElementById('sci-link-inat').href = query ? `https://www.inaturalist.org/search?q=${query}` : 'https://www.inaturalist.org/';
     }
 
     function triggerInvasiveAlarm(speciesLabel, placeLabel, sciQuery) {
       const banner = document.getElementById('invasive-alarm-banner');
-      const txt = document.getElementById('invasive-alarm-text');
-      const exosLink = document.getElementById('alarm-link-exos');
-      txt.innerHTML = `No existen indicios ni registros anteriores de <b>${escapeHtml(speciesLabel)}</b> en <b>${escapeHtml(placeLabel)}</b>. Al tratarse de una especie <b>invasora</b> no habitual en esta zona, conviene documentarla con foto/ubicación exacta y notificarla en RedEXOS.`;
-      exosLink.href = sciQuery
-        ? `https://www.biodiversidadcanarias.es/exos/especies?texto=${encodeURIComponent(sciQuery)}`
-        : 'https://www.biodiversidadcanarias.es/exos/';
+      document.getElementById('invasive-alarm-text').innerHTML = `No existen indicios ni registros anteriores de <b>${escapeHtml(speciesLabel)}</b> en <b>${escapeHtml(placeLabel)}</b>. Al tratarse de una especie <b>invasora</b> no habitual en esta zona, documéntala con foto/GPS y avisa en RedEXOS.`;
+      document.getElementById('alarm-link-exos').href = sciQuery ? `https://www.biodiversidadcanarias.es/exos/especies?texto=${encodeURIComponent(sciQuery)}` : 'https://www.biodiversidadcanarias.es/exos/';
       banner.classList.remove('hidden');
-      lucide.createIcons();
 
       if (navigator.vibrate) {
         try { navigator.vibrate([250, 120, 250, 120, 400]); } catch {}
@@ -1012,7 +769,7 @@
       if (!sci && originSelect.value !== 'Invasora') {
         hideInvasiveAlarm();
         badge.textContent = 'Introduce un nombre científico';
-        summary.innerHTML = 'Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para que la app revise su base de datos interna, tus registros guardados y los registros públicos en Canarias.';
+        summary.innerHTML = 'Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para comprobar en la base de datos interna, en tu almacén y en registros públicos si es habitual, poco habitual, nueva para ti o si activa alarma por invasora sin indicios previos en la zona.';
         return;
       }
 
@@ -1044,31 +801,24 @@
       const isInvasive = originSelect.value === 'Invasora' || (dbMatch && dbMatch.origen === 'Invasora');
       badge.textContent = 'Consultando...';
 
-      let totalCanarias = null;
-      let totalIsland = null;
-      let totalLocalZone = null;
+      let totalCanarias = null, totalIsland = null, totalLocalZone = null;
       if (sci) {
         try {
-          const qCanarias = `https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(sci)}&nelat=29.5&nelng=-13.2&swlat=27.5&swlng=-18.3&per_page=1`;
-          const rCan = await fetch(qCanarias);
+          const rCan = await fetch(`https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(sci)}&nelat=29.5&nelng=-13.2&swlat=27.5&swlng=-18.3&per_page=1`);
           if (rCan.ok) {
             const dCan = await rCan.json();
             totalCanarias = typeof dCan.total_results === 'number' ? dCan.total_results : null;
           }
-
           const coords = ISLAND_COORDS[island];
           if (coords) {
-            const qIsl = `https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(sci)}&lat=${coords[0]}&lng=${coords[1]}&radius=45&per_page=1`;
-            const rIsl = await fetch(qIsl);
+            const rIsl = await fetch(`https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(sci)}&lat=${coords[0]}&lng=${coords[1]}&radius=45&per_page=1`);
             if (rIsl.ok) {
               const dIsl = await rIsl.json();
               totalIsland = typeof dIsl.total_results === 'number' ? dIsl.total_results : null;
             }
           }
-
           if (!isNaN(latVal) && !isNaN(lngVal)) {
-            const qLoc = `https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(sci)}&lat=${latVal}&lng=${lngVal}&radius=10&per_page=1`;
-            const rLoc = await fetch(qLoc);
+            const rLoc = await fetch(`https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(sci)}&lat=${latVal}&lng=${lngVal}&radius=10&per_page=1`);
             if (rLoc.ok) {
               const dLoc = await rLoc.json();
               totalLocalZone = typeof dLoc.total_results === 'number' ? dLoc.total_results : null;
@@ -1084,58 +834,50 @@
         const inSelectedIsland = dbMatch.islas.includes(island);
         if (inSelectedIsland) {
           verdict = dbMatch.origen === 'Invasora' ? `⚠️ Invasora presente en ${island}` : `Habitual / Registrada en ${island}`;
-          notes.push(`Consta en la base de datos interna de Canarias como <b>${dbMatch.origen}</b> (${dbMatch.estado}) con presencia conocida en <b>${island}</b> (${dbMatch.islas.join(', ')}).`);
+          notes.push(`Consta en la base de datos interna como <b>${dbMatch.origen}</b> (${dbMatch.estado}) con presencia conocida en <b>${island}</b> (${dbMatch.islas.join(', ')}).`);
         } else {
-          verdict = dbMatch.origen === 'Invasora' ? `🚨 Invasora NO habitual en ${island}` : `No habitual en ${island} (revisar ubicación)`;
-          notes.push(`Consta en la base de datos interna (<b>${dbMatch.origen}</b>), pero su presencia conocida es en <b>${dbMatch.islas.join(', ')}</b>, no en <b>${island}</b>.`);
+          verdict = dbMatch.origen === 'Invasora' ? `🚨 Invasora NO habitual en ${island}` : `No habitual en ${island}`;
+          notes.push(`Consta en la base de datos interna (<b>${dbMatch.origen}</b>), pero su distribución conocida es <b>${dbMatch.islas.join(', ')}</b>, no en <b>${island}</b>.`);
         }
       } else if (typeof totalIsland === 'number') {
         if (totalIsland >= 25) {
           verdict = `Habitual en ${island}`;
-          notes.push(`Se encuentran <b>${totalIsland}</b> observaciones públicas cercanas en <b>${island}</b> (${totalCanarias ?? '?'} en Canarias).`);
+          notes.push(`Hay <b>${totalIsland}</b> observaciones públicas en <b>${island}</b> (${totalCanarias ?? '?'} en Canarias).`);
         } else if (totalIsland >= 3) {
           verdict = `Poco habitual en ${island}`;
-          notes.push(`Solo aparecen <b>${totalIsland}</b> observaciones públicas cercanas en <b>${island}</b> (${totalCanarias ?? '?'} en Canarias).`);
+          notes.push(`Solo constan <b>${totalIsland}</b> observaciones públicas en <b>${island}</b> (${totalCanarias ?? '?'} en Canarias).`);
         } else if (totalIsland > 0) {
           verdict = `Rara o escasa en ${island}`;
-          notes.push(`Apenas hay <b>${totalIsland}</b> observación(es) pública(s) cercana(s) en <b>${island}</b> (${totalCanarias ?? '?'} en Canarias).`);
+          notes.push(`Apenas hay <b>${totalIsland}</b> observación(es) pública(s) en <b>${island}</b> (${totalCanarias ?? '?'} en Canarias).`);
         } else if ((totalCanarias || 0) > 0) {
           verdict = `No registrada en ${island} (sí en otras islas)`;
-          notes.push(`No hay observaciones públicas cercanas en <b>${island}</b>, aunque sí <b>${totalCanarias}</b> en el conjunto de Canarias.`);
+          notes.push(`Sin registros públicos en <b>${island}</b>, aunque sí <b>${totalCanarias}</b> en Canarias.`);
         } else {
           verdict = `Sin registros públicos / Posible novedad`;
-          notes.push(`No se encontraron observaciones públicas para <i>${escapeHtml(sci)}</i> en el buscador consultado.`);
+          notes.push(`Sin observaciones públicas previas para <i>${escapeHtml(sci)}</i>.`);
         }
       } else {
         verdict = isInvasive ? '⚠️ Especie invasora marcada' : 'Consulta en buscador externo';
-        notes.push('Usa los enlaces de <b>BIOTA Canarias</b>, <b>RedEXOS</b> o <b>iNaturalist</b> de abajo para verificar su ficha oficial.');
+        notes.push('Usa los enlaces de <b>BIOTA Canarias</b>, <b>RedEXOS</b> o <b>iNaturalist</b> para contrastar.');
       }
 
       if (userMatches.length > 0) {
-        if (userInZone.length > 0) {
-          notes.push(`En tu almacén ya lo tienes registrado <b>${userInZone.length}</b> vez/veces en <b>${escapeHtml(zone)} (${island})</b>.`);
-        } else if (userInIsland.length > 0) {
-          notes.push(`En tu almacén ya lo tienes registrado <b>${userInIsland.length}</b> vez/veces en <b>${island}</b> (en otra zona).`);
-        } else {
-          notes.push(`En tu almacén ya lo tienes registrado <b>${userMatches.length}</b> vez/veces en otra isla, por lo que sería <b>nueva para ti en ${island}</b>.`);
-        }
+        if (userInZone.length > 0) notes.push(`En tu almacén ya tienes <b>${userInZone.length}</b> registro(s) en <b>${escapeHtml(zone)} (${island})</b>.`);
+        else if (userInIsland.length > 0) notes.push(`En tu almacén ya tienes <b>${userInIsland.length}</b> registro(s) en <b>${island}</b>.`);
+        else notes.push(`Registrada antes en otra isla, pero <b>nueva para ti en ${island}</b>.`);
       } else {
-        notes.push(`<b>Nunca vista en tu almacén:</b> no tenías ningún registro previo de esta especie.`);
+        notes.push(`<b>Nunca vista en tu almacén.</b>`);
       }
 
       badge.textContent = verdict;
       summary.innerHTML = notes.join(' ');
 
-      const hasPriorUserRecordInZone = zone ? userInZone.length > 0 : userInIsland.length > 0;
-      const hasPriorPublicRecordInZone = typeof totalLocalZone === 'number'
-        ? totalLocalZone > 0
-        : (typeof totalIsland === 'number' ? totalIsland > 0 : false);
+      const hasPriorUserInZone = zone ? userInZone.length > 0 : userInIsland.length > 0;
+      const hasPriorPublicInZone = typeof totalLocalZone === 'number' ? totalLocalZone > 0 : (typeof totalIsland === 'number' ? totalIsland > 0 : false);
       const knownInIslandByDB = dbMatch ? dbMatch.islas.includes(island) : false;
 
-      if (isInvasive && !hasPriorUserRecordInZone && !hasPriorPublicRecordInZone && (!knownInIslandByDB || zone)) {
-        const label = commonInput.value.trim() || sci || 'Especie invasora';
-        const place = zone ? `${zone} (${island})` : island;
-        triggerInvasiveAlarm(label, place, sci || commonInput.value.trim());
+      if (isInvasive && !hasPriorUserInZone && !hasPriorPublicInZone && (!knownInIslandByDB || zone)) {
+        triggerInvasiveAlarm(commonInput.value.trim() || sci || 'Especie invasora', zone ? `${zone} (${island})` : island, sci || commonInput.value.trim());
       } else {
         hideInvasiveAlarm();
       }
@@ -1144,26 +886,18 @@
     document.getElementById('btn-lookup-sci').addEventListener('click', checkSpeciesByScientificName);
     document.getElementById('inp-sci').addEventListener('change', checkSpeciesByScientificName);
     document.getElementById('inp-origin').addEventListener('change', checkSpeciesByScientificName);
-    document.getElementById('inp-sci').addEventListener('input', () => {
-      updateSearchLinks(document.getElementById('inp-sci').value, document.getElementById('inp-common').value);
-    });
-    document.getElementById('inp-common').addEventListener('input', () => {
-      updateSearchLinks(document.getElementById('inp-sci').value, document.getElementById('inp-common').value);
-    });
+    document.getElementById('inp-sci').addEventListener('input', () => updateSearchLinks(document.getElementById('inp-sci').value, document.getElementById('inp-common').value));
+    document.getElementById('inp-common').addEventListener('input', () => updateSearchLinks(document.getElementById('inp-sci').value, document.getElementById('inp-common').value));
 
     document.getElementById('inp-type').addEventListener('change', (e) => {
       const t = e.target.value;
       const hint = document.getElementById('dimorphism-hint');
-      if (t === 'Animal') {
-        hint.innerHTML = '💡 <b>Dimorfismo en animales:</b> comprueba si hay diferencia de color, tamaño, plumaje, crestas o aletas entre macho y hembra (por ejemplo, en lagartos, pinzones o viejas), o si son iguales (<i>No hay dimorfismo sexual</i>).';
-      } else if (t === 'Planta') {
-        hint.innerHTML = '💡 <b>Dimorfismo / sexualidad en plantas:</b> muchas plantas tienen flores hermafroditas o aspecto igual en todos los pies (<i>No hay dimorfismo sexual / No aplica</i>), salvo especies dioicas con pies masculinos y femeninos separados.';
-      } else {
-        hint.innerHTML = '💡 <b>Dimorfismo sexual:</b> indica <i>Macho</i>, <i>Hembra</i>, <i>No hay dimorfismo sexual / No aplica</i> o <i>No determinado</i> según lo que observes.';
-      }
+      if (t === 'Animal') hint.innerHTML = '💡 <b>Dimorfismo en animales:</b> indica si hay diferencias de color, tamaño, plumaje o aletas entre macho y hembra, o marca <i>No hay dimorfismo sexual</i> si son iguales.';
+      else if (t === 'Planta') hint.innerHTML = '💡 <b>Dimorfismo en plantas:</b> en la mayoría de plantas no aplica o no hay dimorfismo visible (salvo especies dioicas con pies masculinos y femeninos).';
+      else hint.innerHTML = '💡 <b>Dimorfismo sexual:</b> selecciona <i>Macho</i>, <i>Hembra</i>, <i>No hay dimorfismo sexual / No aplica</i> o <i>No determinado</i>.';
     });
 
-    // ================= NAVIGATION =================
+    // ================= NAVEGACIÓN =================
     function switchTab(tabName) {
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       const panel = document.getElementById('tab-' + tabName);
@@ -1172,11 +906,8 @@
       document.querySelectorAll('.nav-btn').forEach(b => {
         const active = b.dataset.tab === tabName;
         b.classList.remove('border-emerald-400', 'text-white', 'border-transparent', 'text-emerald-200');
-        if (active) {
-          b.classList.add('border-emerald-400', 'text-white');
-        } else {
-          b.classList.add('border-transparent', 'text-emerald-200');
-        }
+        if (active) b.classList.add('border-emerald-400', 'text-white');
+        else b.classList.add('border-transparent', 'text-emerald-200');
       });
 
       if (tabName === 'mapa') {
@@ -1187,11 +918,9 @@
       }
     }
 
-    document.querySelectorAll('[data-tab]').forEach(btn => {
-      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-    });
+    document.querySelectorAll('[data-tab]').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
 
-    // ================= FORM: PHOTO, AUDIO, PASTE/COPY =================
+    // ================= FORM: FOTO, AUDIO, PEGAR/COPIAR =================
     document.getElementById('btn-paste-desc').addEventListener('click', async () => {
       try {
         const text = await navigator.clipboard.readText();
@@ -1200,7 +929,7 @@
         ta.value = ta.value ? (ta.value + '\n' + text) : text;
         showToast('Texto pegado');
       } catch {
-        showToast('Tu navegador requiere pegar manualmente (Ctrl+V o mantener pulsado)');
+        showToast('Mantén pulsado dentro del cuadro y pulsa Pegar');
       }
     });
 
@@ -1217,7 +946,7 @@
       reader.onload = (ev) => {
         const img = new Image();
         img.onload = () => {
-          const maxDim = 1400;
+          const maxDim = 1280;
           let w = img.width, h = img.height;
           if (w > maxDim || h > maxDim) {
             if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
@@ -1226,7 +955,7 @@
           const canvas = document.createElement('canvas');
           canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          currentPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          currentPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.82);
           showPhotoPreview(currentPhotoDataUrl);
         };
         img.src = ev.target.result;
@@ -1238,17 +967,8 @@
       const prev = document.getElementById('photo-preview');
       const ph = document.getElementById('photo-placeholder');
       const btnRm = document.getElementById('btn-remove-photo');
-      if (dataUrl) {
-        prev.src = dataUrl;
-        prev.classList.remove('hidden');
-        ph.classList.add('hidden');
-        btnRm.classList.remove('hidden');
-      } else {
-        prev.src = '';
-        prev.classList.add('hidden');
-        ph.classList.remove('hidden');
-        btnRm.classList.add('hidden');
-      }
+      if (dataUrl) { prev.src = dataUrl; prev.classList.remove('hidden'); ph.classList.add('hidden'); btnRm.classList.remove('hidden'); }
+      else { prev.src = ''; prev.classList.add('hidden'); ph.classList.remove('hidden'); btnRm.classList.add('hidden'); }
     }
 
     document.getElementById('btn-remove-photo').addEventListener('click', () => {
@@ -1261,17 +981,8 @@
       const audioEl = document.getElementById('audio-preview');
       const emptyMsg = document.getElementById('audio-empty-msg');
       const btnRm = document.getElementById('btn-remove-audio');
-      if (dataUrl) {
-        audioEl.src = dataUrl;
-        audioEl.classList.remove('hidden');
-        emptyMsg.classList.add('hidden');
-        btnRm.classList.remove('hidden');
-      } else {
-        audioEl.src = '';
-        audioEl.classList.add('hidden');
-        emptyMsg.classList.remove('hidden');
-        btnRm.classList.add('hidden');
-      }
+      if (dataUrl) { audioEl.src = dataUrl; audioEl.classList.remove('hidden'); emptyMsg.classList.add('hidden'); btnRm.classList.remove('hidden'); }
+      else { audioEl.src = ''; audioEl.classList.add('hidden'); emptyMsg.classList.remove('hidden'); btnRm.classList.add('hidden'); }
     }
 
     document.getElementById('btn-remove-audio').addEventListener('click', () => {
@@ -1335,16 +1046,11 @@
       reader.readAsDataURL(file);
     });
 
-    // ================= LOCATION (GPS + WRITTEN SEARCH) =================
+    // ================= UBICACIÓN (GPS + BÚSQUEDA ESCRITA) =================
     document.getElementById('inp-island').addEventListener('change', (e) => {
       const c = ISLAND_COORDS[e.target.value];
-      if (c) {
-        document.getElementById('inp-lat').value = c[0];
-        document.getElementById('inp-lng').value = c[1];
-      }
-      if (document.getElementById('inp-sci').value.trim() || document.getElementById('inp-origin').value === 'Invasora') {
-        checkSpeciesByScientificName();
-      }
+      if (c) { document.getElementById('inp-lat').value = c[0]; document.getElementById('inp-lng').value = c[1]; }
+      if (document.getElementById('inp-sci').value.trim() || document.getElementById('inp-origin').value === 'Invasora') checkSpeciesByScientificName();
     });
 
     function detectNearestIsland(lat, lng) {
@@ -1363,59 +1069,45 @@
       const searchQ = q.toLowerCase().includes('canarias') ? q : `${q}, ${island}, Canarias, España`;
       showToast('Buscando ubicación...');
       try {
-        let resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=${encodeURIComponent(searchQ)}`, {
-          headers: { 'Accept-Language': 'es' }
-        });
+        let resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=${encodeURIComponent(searchQ)}`, { headers: { 'Accept-Language': 'es' } });
         let data = await resp.json();
         if (!data.length) {
-          resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=${encodeURIComponent(q + ', Canarias, España')}`, {
-            headers: { 'Accept-Language': 'es' }
-          });
+          resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=${encodeURIComponent(q + ', Canarias, España')}`, { headers: { 'Accept-Language': 'es' } });
           data = await resp.json();
         }
         if (!data.length) return showToast('No se encontró ese lugar en Canarias.');
 
         const place = data[0];
-        const lat = parseFloat(place.lat);
-        const lng = parseFloat(place.lon);
+        const lat = parseFloat(place.lat), lng = parseFloat(place.lon);
         document.getElementById('inp-lat').value = lat.toFixed(5);
         document.getElementById('inp-lng').value = lng.toFixed(5);
-
         const detectedIsland = detectNearestIsland(lat, lng);
         document.getElementById('inp-island').value = detectedIsland;
-
         const addr = place.address || {};
         const niceName = addr.village || addr.town || addr.city || addr.suburb || addr.municipality || q;
         document.getElementById('inp-zone').value = niceName;
         showToast(`Ubicación fijada: ${niceName} (${detectedIsland})`);
-        if (document.getElementById('inp-sci').value.trim() || document.getElementById('inp-origin').value === 'Invasora') {
-          checkSpeciesByScientificName();
-        }
+        if (document.getElementById('inp-sci').value.trim() || document.getElementById('inp-origin').value === 'Invasora') checkSpeciesByScientificName();
       } catch {
-        showToast('Error al buscar ubicación. Comprueba tu conexión.');
+        showToast('Error al buscar ubicación.');
       }
     }
 
     document.getElementById('btn-geocode').addEventListener('click', geocodeWrittenLocation);
-    document.getElementById('inp-zone').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); geocodeWrittenLocation(); }
-    });
+    document.getElementById('inp-zone').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); geocodeWrittenLocation(); } });
 
     document.getElementById('btn-gps').addEventListener('click', () => {
       if (!navigator.geolocation) return showToast('Tu navegador no soporta GPS');
-      showToast('Obteniendo ubicación GPS exacta...');
+      showToast('Obteniendo ubicación GPS...');
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
+          const lat = pos.coords.latitude, lng = pos.coords.longitude;
           document.getElementById('inp-lat').value = lat.toFixed(5);
           document.getElementById('inp-lng').value = lng.toFixed(5);
           const detectedIsland = detectNearestIsland(lat, lng);
           document.getElementById('inp-island').value = detectedIsland;
           try {
-            const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`, {
-              headers: { 'Accept-Language': 'es' }
-            });
+            const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`, { headers: { 'Accept-Language': 'es' } });
             const data = await resp.json();
             const addr = data.address || {};
             const placeName = addr.village || addr.town || addr.suburb || addr.city || addr.municipality || detectedIsland;
@@ -1424,23 +1116,21 @@
           } catch {
             showToast(`GPS actualizado (${detectedIsland})`);
           }
-          if (document.getElementById('inp-sci').value.trim() || document.getElementById('inp-origin').value === 'Invasora') {
-            checkSpeciesByScientificName();
-          }
+          if (document.getElementById('inp-sci').value.trim() || document.getElementById('inp-origin').value === 'Invasora') checkSpeciesByScientificName();
         },
         (err) => {
           if (err.code === 1) showToast('Permiso de ubicación denegado.');
           else if (err.code === 2) showToast('Señal GPS no disponible.');
-          else showToast('Tiempo de espera agotado al obtener el GPS.');
+          else showToast('Tiempo de espera agotado al obtener GPS.');
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     });
 
-    // ================= SAVE & EDIT RECORD =================
+    // ================= GUARDAR Y EDITAR =================
     function resetForm() {
       editingId = null;
-      document.getElementById('form-title').innerHTML = '<i data-lucide="folder-plus" class="w-5 h-5 text-emerald-600"></i> Guardar nueva observación';
+      document.getElementById('form-title').textContent = '📝 Guardar nueva observación';
       document.getElementById('btn-save-label').textContent = 'Guardar en Mi Almacén';
       document.getElementById('record-form').reset();
       document.getElementById('inp-date').value = new Date().toISOString().split('T')[0];
@@ -1455,8 +1145,7 @@
       updateSearchLinks('', '');
       hideInvasiveAlarm();
       document.getElementById('sci-status-badge').textContent = 'Introduce un nombre científico';
-      document.getElementById('sci-check-summary').innerHTML = 'Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para que la app revise su base de datos interna, tus registros guardados y los registros públicos en Canarias.';
-      lucide.createIcons();
+      document.getElementById('sci-check-summary').innerHTML = 'Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para comprobar en la base de datos interna, en tu almacén y en registros públicos si es habitual, poco habitual, nueva para ti o si activa alarma por invasora sin indicios previos en la zona.';
     }
 
     document.getElementById('btn-reset-form').addEventListener('click', resetForm);
@@ -1496,13 +1185,12 @@
         showToast(editingId ? `"${rec.nombre_comun}" actualizada` : `"${rec.nombre_comun}" guardada en Mi Almacén`);
         resetForm();
         renderRecordsList();
-      } catch (err) {
-        console.error(err);
-        showToast('Error al guardar en el almacén local');
+      } catch {
+        showToast('Error al guardar en el almacén');
       }
     });
 
-    // ================= RENDER ALMACÉN & DETAIL MODAL =================
+    // ================= RENDER ALMACÉN & MODAL =================
     function renderRecordsList() {
       const q = document.getElementById('search-records').value.toLowerCase();
       const fOrigin = document.getElementById('filter-origin').value;
@@ -1516,11 +1204,10 @@
 
       const filtered = records.filter(r => {
         const hay = `${r.nombre_comun} ${r.nombre_cientifico} ${r.descripcion} ${r.zone} ${r.estado_conservacion || ''} ${r.sexo || ''}`.toLowerCase();
-        const matchQ = !q || hay.includes(q);
-        const matchO = !fOrigin || r.origen === fOrigin;
-        const matchC = !fCons || (r.estado_conservacion || '').toLowerCase().includes(fCons);
-        const matchI = !fIsland || r.island === fIsland;
-        return matchQ && matchO && matchC && matchI;
+        return (!q || hay.includes(q))
+          && (!fOrigin || r.origen === fOrigin)
+          && (!fCons || (r.estado_conservacion || '').toLowerCase().includes(fCons))
+          && (!fIsland || r.island === fIsland);
       });
 
       const container = document.getElementById('records-list');
@@ -1533,7 +1220,7 @@
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 flex gap-3 shadow-sm hover:border-emerald-400/60 transition cursor-pointer" onclick="openDetailModal(${r.id})">
           ${r.photo
             ? `<img src="${r.photo}" class="w-20 h-20 rounded-xl object-cover shrink-0" />`
-            : `<div class="w-20 h-20 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center shrink-0 text-emerald-600"><i data-lucide="${r.audio ? 'volume-2' : 'file-text'}" class="w-7 h-7"></i></div>`
+            : `<div class="w-20 h-20 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center shrink-0 text-xl">${r.audio ? '🔊' : '📄'}</div>`
           }
           <div class="flex-1 min-w-0 space-y-1">
             <div class="flex items-center justify-between gap-2">
@@ -1550,11 +1237,11 @@
           </div>
         </div>
       `).join('');
-      lucide.createIcons();
     }
 
     ['search-records', 'filter-origin', 'filter-conservation', 'filter-island'].forEach(id => {
       document.getElementById(id).addEventListener('input', renderRecordsList);
+      document.getElementById(id).addEventListener('change', renderRecordsList);
     });
 
     window.openDetailModal = (id) => {
@@ -1586,9 +1273,7 @@
 
       const qSci = encodeURIComponent(r.nombre_cientifico || r.nombre_comun);
       document.getElementById('mod-biota').href = `https://www.biodiversidadcanarias.es/biota/especies?texto=${qSci}`;
-
       document.getElementById('detail-modal').classList.remove('hidden');
-      lucide.createIcons();
     };
 
     function closeModal() {
@@ -1598,14 +1283,12 @@
     }
 
     document.getElementById('btn-close-modal').addEventListener('click', closeModal);
-    document.getElementById('detail-modal').addEventListener('click', (e) => {
-      if (e.target.id === 'detail-modal') closeModal();
-    });
+    document.getElementById('detail-modal').addEventListener('click', (e) => { if (e.target.id === 'detail-modal') closeModal(); });
 
     document.getElementById('btn-mod-copy').addEventListener('click', () => {
       if (!currentModalRecord) return;
       const r = currentModalRecord;
-      const text = `${r.nombre_comun}${r.nombre_cientifico ? ' (' + r.nombre_cientifico + ')' : ''}\n${r.origen} · ${r.tipo} · ${r.habitat}\nEstado: ${r.estado_conservacion || 'Sin especificar'} · Sexo/Dimorfismo: ${r.sexo || 'No determinado'}\nUbicación: ${r.zone} (${r.island}) · Fecha: ${r.date}\n\n${r.descripcion || ''}`.trim();
+      const text = `${r.nombre_comun}${r.nombre_cientifico ? ' (' + r.nombre_cientifico + ')' : ''}\n${r.origen} · ${r.tipo} · ${r.habitat}\nEstado: ${r.estado_conservacion || 'Sin especificar'} · Sexo: ${r.sexo || 'No determinado'}\nUbicación: ${r.zone} (${r.island}) · Fecha: ${r.date}\n\n${r.descripcion || ''}`.trim();
       copyToClipboard(text, 'Texto del registro copiado');
     });
 
@@ -1621,7 +1304,7 @@
       if (!currentModalRecord) return;
       const r = currentModalRecord;
       editingId = r.id;
-      document.getElementById('form-title').innerHTML = '<i data-lucide="pencil" class="w-5 h-5 text-amber-500"></i> Editando registro';
+      document.getElementById('form-title').textContent = '✏️ Editando registro';
       document.getElementById('btn-save-label').textContent = 'Guardar cambios';
       document.getElementById('inp-common').value = r.nombre_comun || '';
       document.getElementById('inp-sci').value = r.nombre_cientifico || '';
@@ -1643,7 +1326,6 @@
       updateSearchLinks(r.nombre_cientifico, r.nombre_comun);
       closeModal();
       switchTab('nuevo');
-      lucide.createIcons();
     });
 
     document.getElementById('btn-mod-delete').addEventListener('click', async () => {
@@ -1659,7 +1341,7 @@
 
     // ================= MAPA =================
     function initMap() {
-      if (map) return;
+      if (map || typeof L === 'undefined') return;
       map = L.map('map').setView([28.35, -15.7], 7);
       standardLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' });
       satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '&copy; Esri' });
@@ -1714,17 +1396,14 @@
         document.querySelectorAll('.map-filter-btn').forEach(b => {
           const active = b.dataset.filter === activeMapFilter;
           b.classList.remove('bg-forest-900', 'text-white', 'bg-white', 'dark:bg-slate-800');
-          if (active) {
-            b.classList.add('bg-forest-900', 'text-white');
-          } else {
-            b.classList.add('bg-white', 'dark:bg-slate-800');
-          }
+          if (active) b.classList.add('bg-forest-900', 'text-white');
+          else b.classList.add('bg-white', 'dark:bg-slate-800');
         });
         renderMapMarkers();
       });
     });
 
-    // ================= SETTINGS & BACKUP =================
+    // ================= AJUSTES Y COPIAS =================
     document.getElementById('setting-dark').addEventListener('change', (e) => { settings.dark = e.target.checked; saveSettings(); });
     document.getElementById('btn-theme-quick').addEventListener('click', () => { settings.dark = !settings.dark; saveSettings(); });
     document.getElementById('setting-island').addEventListener('change', (e) => {
@@ -1806,9 +1485,7 @@
       document.getElementById('btn-install-pwa').classList.add('hidden');
     });
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
-      });
+      window.addEventListener('load', () => { navigator.serviceWorker.register('./service-worker.js').catch(() => {}); });
     }
 
     // ================= INIT =================
@@ -1816,14 +1493,8 @@
       applySettingsUI();
       renderDailySpecies();
       resetForm();
-      try {
-        await openDB();
-        records = await dbGetAll();
-      } catch (err) {
-        console.error('IndexedDB error:', err);
-        showToast('Aviso: no se pudo iniciar el almacenamiento local');
-      }
-      lucide.createIcons();
+      await openDB();
+      records = await dbGetAll();
     })();
   </script>
 </body>

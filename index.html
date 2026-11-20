@@ -29,6 +29,9 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
   <style>
     body { -webkit-tap-highlight-color: transparent; }
@@ -53,8 +56,9 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
+        <button type="button" id="btn-header-sync" class="text-[11px] font-semibold bg-forest-800 hover:bg-emerald-800 px-2.5 py-1.5 rounded-lg border border-emerald-700/70">☁️ Sin cuenta</button>
         <button type="button" id="btn-install-pwa" class="hidden bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-semibold px-3 py-1.5 rounded-lg shadow">⬇ Instalar</button>
-        <button type="button" id="btn-theme-quick" title="Cambiar tema" class="px-2.5 py-1.5 rounded-lg bg-forest-800 hover:bg-emerald-800 text-xs font-semibold transition">🌓 Tema</button>
+        <button type="button" id="btn-theme-quick" title="Cambiar tema" class="px-2.5 py-1.5 rounded-lg bg-forest-800 hover:bg-emerald-800 text-xs font-semibold transition">🌓</button>
       </div>
     </div>
 
@@ -382,6 +386,46 @@
 
     <!-- ================= TAB 4: AJUSTES ================= -->
     <section id="tab-ajustes" class="tab-panel space-y-4">
+      <!-- CUENTA Y SINCRONIZACIÓN PC <-> MÓVIL -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border-2 border-emerald-500/40 dark:border-emerald-700/60 p-5 space-y-4 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="font-bold text-base">☁️ Cuenta y Sincronización (PC ↔ Móvil)</h2>
+            <p class="text-xs text-slate-500">Inicia sesión con el mismo email y contraseña en tu PC y móvil para compartir el almacén.</p>
+          </div>
+          <span id="auth-status-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Modo local (sin sesión)</span>
+        </div>
+
+        <div id="auth-logged-out" class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">Correo electrónico</label>
+              <input type="email" id="auth-email" placeholder="tuemail@ejemplo.com" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">Contraseña (mín. 6 caracteres)</label>
+              <input type="password" id="auth-password" placeholder="••••••" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2 text-sm" />
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" id="btn-auth-login" class="bg-forest-900 hover:bg-emerald-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow">Iniciar sesión</button>
+            <button type="button" id="btn-auth-register" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl">Crear cuenta nueva</button>
+            <button type="button" id="btn-auth-reset" class="text-xs text-slate-500 hover:underline ml-auto">¿Olvidaste tu contraseña?</button>
+          </div>
+        </div>
+
+        <div id="auth-logged-in" class="hidden space-y-3 bg-emerald-50/70 dark:bg-emerald-950/30 p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-900">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <p class="text-xs">Conectado como <b id="auth-user-email" class="text-emerald-800 dark:text-emerald-300"></b></p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" id="btn-sync-now" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg">🔄 Sincronizar ahora</button>
+              <button type="button" id="btn-auth-logout" class="bg-slate-200 dark:bg-slate-800 text-xs font-semibold px-3 py-1.5 rounded-lg">Cerrar sesión</button>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Los datos, ubicaciones, estados y notas se sincronizan automáticamente. Si una foto o audio supera el límite de Firestore (900 KB), se conserva igualmente en tu dispositivo.</p>
+        </div>
+      </div>
+
       <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-4">
         <h2 class="font-semibold text-base">⚙️ Preferencias</h2>
 
@@ -486,6 +530,193 @@
   </div>
 
   <script>
+    // ================= FIREBASE AUTH & FIRESTORE SYNC =================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBD5WVXOw73bVdAe5fxMaZUDqx4zABGcJo",
+      authDomain: "biocanarias-d76dd.firebaseapp.com",
+      projectId: "biocanarias-d76dd",
+      storageBucket: "biocanarias-d76dd.firebasestorage.app",
+      messagingSenderId: "1089267292775",
+      appId: "1:1089267292775:web:a39ee3db3a1512f1a892c2",
+      measurementId: "G-KPC94JDX07"
+    };
+
+    let fbAuth = null, fbDb = null, currentUser = null, unsubscribeCloud = null;
+
+    function initFirebase() {
+      try {
+        if (typeof firebase === 'undefined') return;
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        fbAuth = firebase.auth();
+        fbDb = firebase.firestore();
+
+        fbAuth.onAuthStateChanged(async (user) => {
+          currentUser = user;
+          updateAuthUI();
+          if (unsubscribeCloud) { unsubscribeCloud(); unsubscribeCloud = null; }
+          if (user) {
+            await mergeLocalToCloudAndListen(user);
+          }
+        });
+      } catch (e) {
+        console.error('Firebase init error:', e);
+      }
+    }
+
+    function updateAuthUI() {
+      const badge = document.getElementById('auth-status-badge');
+      const headerBtn = document.getElementById('btn-header-sync');
+      const outBox = document.getElementById('auth-logged-out');
+      const inBox = document.getElementById('auth-logged-in');
+      if (currentUser) {
+        badge.textContent = 'Sincronizado en la nube';
+        badge.className = 'text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300';
+        headerBtn.textContent = '☁️ ' + currentUser.email.split('@')[0];
+        document.getElementById('auth-user-email').textContent = currentUser.email;
+        outBox.classList.add('hidden');
+        inBox.classList.remove('hidden');
+      } else {
+        badge.textContent = 'Modo local (sin sesión)';
+        badge.className = 'text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+        headerBtn.textContent = '☁️ Conectar';
+        outBox.classList.remove('hidden');
+        inBox.classList.add('hidden');
+      }
+    }
+
+    function sanitizeForFirestore(rec) {
+      const copy = Object.assign({}, rec);
+      // Firestore doc max size is 1MB; keep media if small enough, otherwise omit heavy base64 from cloud doc while preserving in local IndexedDB
+      if (copy.photo && copy.photo.length > 650000) copy.photo = null;
+      if (copy.audio && copy.audio.length > 650000) copy.audio = null;
+      return copy;
+    }
+
+    async function cloudSaveRecord(rec) {
+      if (!currentUser || !fbDb) return;
+      try {
+        await fbDb.collection('users').doc(currentUser.uid).collection('records').doc(String(rec.id)).set(sanitizeForFirestore(rec), { merge: true });
+      } catch (e) {
+        console.error('Cloud save error:', e);
+        showToast('Guardado en local (aviso al subir a la nube: revisa reglas de Firestore)');
+      }
+    }
+
+    async function cloudDeleteRecord(id) {
+      if (!currentUser || !fbDb) return;
+      try {
+        await fbDb.collection('users').doc(currentUser.uid).collection('records').doc(String(id)).delete();
+      } catch (e) {
+        console.error('Cloud delete error:', e);
+      }
+    }
+
+    async function mergeLocalToCloudAndListen(user) {
+      if (!fbDb) return;
+      const colRef = fbDb.collection('users').doc(user.uid).collection('records');
+      try {
+        const snap = await colRef.get();
+        const cloudIds = new Set();
+        snap.forEach((doc) => {
+          cloudIds.add(doc.id);
+          const data = doc.data();
+          if (data && data.id) dbPut(data);
+        });
+        // Subir registros locales que aún no existan en la nube
+        const localAll = await dbGetAll();
+        for (const item of localAll) {
+          if (!cloudIds.has(String(item.id))) {
+            await colRef.doc(String(item.id)).set(sanitizeForFirestore(item), { merge: true });
+          }
+        }
+        records = await dbGetAll();
+        renderRecordsList();
+        if (markersGroup) renderMapMarkers();
+      } catch (e) {
+        console.error('Sync error:', e);
+        showToast('Error al sincronizar con Firestore. Comprueba que la base de datos esté creada.');
+      }
+
+      // Escucha en tiempo real para cambios desde el otro dispositivo
+      unsubscribeCloud = colRef.onSnapshot(async (snapshot) => {
+        let changed = false;
+        for (const change of snapshot.docChanges()) {
+          const data = change.doc.data();
+          if (change.type === 'added' || change.type === 'modified') {
+            const existing = records.find(r => String(r.id) === String(data.id));
+            // Conservar foto/audio local si en la nube se omitió por tamaño
+            if (existing) {
+              if (!data.photo && existing.photo) data.photo = existing.photo;
+              if (!data.audio && existing.audio) data.audio = existing.audio;
+            }
+            await dbPut(data);
+            changed = true;
+          } else if (change.type === 'removed') {
+            await dbDelete(Number(change.doc.id) || change.doc.id);
+            changed = true;
+          }
+        }
+        if (changed) {
+          records = await dbGetAll();
+          renderRecordsList();
+          if (markersGroup) renderMapMarkers();
+        }
+      });
+    }
+
+    document.getElementById('btn-header-sync').addEventListener('click', () => switchTab('ajustes'));
+
+    document.getElementById('btn-auth-login').addEventListener('click', async () => {
+      if (!fbAuth) return showToast('Firebase no disponible');
+      const email = document.getElementById('auth-email').value.trim();
+      const pass = document.getElementById('auth-password').value;
+      if (!email || !pass) return showToast('Introduce tu email y contraseña');
+      try {
+        await fbAuth.signInWithEmailAndPassword(email, pass);
+        showToast('Sesión iniciada correctamente');
+      } catch (err) {
+        showToast('Error al iniciar sesión: ' + (err.message || err.code));
+      }
+    });
+
+    document.getElementById('btn-auth-register').addEventListener('click', async () => {
+      if (!fbAuth) return showToast('Firebase no disponible');
+      const email = document.getElementById('auth-email').value.trim();
+      const pass = document.getElementById('auth-password').value;
+      if (!email || pass.length < 6) return showToast('Usa un email válido y contraseña de al menos 6 caracteres');
+      try {
+        await fbAuth.createUserWithEmailAndPassword(email, pass);
+        showToast('Cuenta creada y conectada');
+      } catch (err) {
+        showToast('Error al crear cuenta: ' + (err.message || err.code));
+      }
+    });
+
+    document.getElementById('btn-auth-reset').addEventListener('click', async () => {
+      if (!fbAuth) return;
+      const email = document.getElementById('auth-email').value.trim();
+      if (!email) return showToast('Escribe tu correo arriba para enviar el enlace de recuperación');
+      try {
+        await fbAuth.sendPasswordResetEmail(email);
+        showToast('Correo de recuperación enviado');
+      } catch (err) {
+        showToast('No se pudo enviar: ' + (err.message || err.code));
+      }
+    });
+
+    document.getElementById('btn-auth-logout').addEventListener('click', async () => {
+      if (!fbAuth) return;
+      await fbAuth.signOut();
+      showToast('Sesión cerrada');
+    });
+
+    document.getElementById('btn-sync-now').addEventListener('click', async () => {
+      if (!currentUser) return;
+      showToast('Sincronizando almacén...');
+      await mergeLocalToCloudAndListen(currentUser);
+      showToast('Almacén sincronizado');
+    });
+
     // ================= BASE DE DATOS INTERNA DE ESPECIES CANARIAS =================
     const CANARY_DB = [
       { nombre_comun: 'Pinzón azul de Tenerife', nombre_cientifico: 'Fringilla teydea', tipo: 'Animal', habitat: 'Terrestre', origen: 'Endémica', estado: 'Casi amenazada (NT)', islas: ['Tenerife'], meses: 'Abril a agosto (residente todo el año)', curiosidad: 'Su pico es más grueso que el del pinzón común para abrir las duras piñas del pino canario.', clave: 'Macho azul pizarra uniforme sin franjas blancas; hembra gris parduzco.', donde: 'Pinares de Tenerife (1.000 - 2.000 m).', dieta: 'Piñones de pino canario e insectos.', repro: 'Mayo a julio (2 huevos).' },
@@ -946,7 +1177,7 @@
       reader.onload = (ev) => {
         const img = new Image();
         img.onload = () => {
-          const maxDim = 1280;
+          const maxDim = 1024;
           let w = img.width, h = img.height;
           if (w > maxDim || h > maxDim) {
             if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
@@ -955,7 +1186,7 @@
           const canvas = document.createElement('canvas');
           canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          currentPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          currentPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.72);
           showPhotoPreview(currentPhotoDataUrl);
         };
         img.src = ev.target.result;
@@ -1121,7 +1352,7 @@
         (err) => {
           if (err.code === 1) showToast('Permiso de ubicación denegado.');
           else if (err.code === 2) showToast('Señal GPS no disponible.');
-          else showToast('Tiempo de espera agotado al obtener GPS.');
+          else showToast('Tiempo agotado al obtener GPS.');
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
@@ -1181,6 +1412,7 @@
 
       try {
         await dbPut(rec);
+        await cloudSaveRecord(rec);
         records = await dbGetAll();
         showToast(editingId ? `"${rec.nombre_comun}" actualizada` : `"${rec.nombre_comun}" guardada en Mi Almacén`);
         resetForm();
@@ -1332,6 +1564,7 @@
       if (!currentModalRecord) return;
       if (!confirm(`¿Eliminar "${currentModalRecord.nombre_comun}" del almacén?`)) return;
       await dbDelete(currentModalRecord.id);
+      await cloudDeleteRecord(currentModalRecord.id);
       records = await dbGetAll();
       closeModal();
       renderRecordsList();
@@ -1450,6 +1683,7 @@
           for (const item of list) {
             if (!item.id) item.id = Date.now() + Math.floor(Math.random() * 10000);
             await dbPut(item);
+            await cloudSaveRecord(item);
           }
           records = await dbGetAll();
           renderRecordsList();
@@ -1463,7 +1697,9 @@
 
     document.getElementById('btn-clear-data').addEventListener('click', async () => {
       if (!confirm('¿Seguro que quieres vaciar todo tu almacén de registros?')) return;
+      const oldIds = records.map(r => r.id);
       await dbClear();
+      for (const oid of oldIds) { await cloudDeleteRecord(oid); }
       records = [];
       renderRecordsList();
       if (markersGroup) renderMapMarkers();
@@ -1495,6 +1731,7 @@
       resetForm();
       await openDB();
       records = await dbGetAll();
+      initFirebase();
     })();
   </script>
 </body>

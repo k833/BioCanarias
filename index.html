@@ -168,6 +168,25 @@
           </div>
         </div>
 
+        <!-- Alarma de especie invasora sin indicios previos en la zona -->
+        <div id="invasive-alarm-banner" class="hidden rounded-2xl border-2 border-rose-600 bg-rose-600 text-white p-4 shadow-lg space-y-2">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <i data-lucide="siren" class="w-6 h-6 shrink-0 animate-bounce"></i>
+              <div>
+                <p class="font-extrabold text-sm uppercase tracking-wide">¡ALARMA! Posible foco nuevo de especie invasora</p>
+                <p id="invasive-alarm-text" class="text-xs text-rose-100 mt-0.5 leading-relaxed"></p>
+              </div>
+            </div>
+            <button type="button" id="btn-dismiss-alarm" class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-lg font-semibold shrink-0">Entendido</button>
+          </div>
+          <div class="flex flex-wrap gap-2 pt-1">
+            <a id="alarm-link-exos" href="https://www.biodiversidadcanarias.es/exos/" target="_blank" rel="noopener" class="bg-white text-rose-700 font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm hover:bg-rose-50">
+              Avisar / Consultar en RedEXOS ↗
+            </a>
+          </div>
+        </div>
+
         <!-- Diagnóstico automático de la app (BD local + registros guardados + registros públicos) -->
         <div id="sci-check-box" class="rounded-2xl border border-emerald-200 dark:border-emerald-900/70 bg-emerald-50/60 dark:bg-emerald-950/30 p-3.5 space-y-2">
           <div class="flex flex-wrap items-center justify-between gap-2">
@@ -179,7 +198,7 @@
             </span>
           </div>
           <p id="sci-check-summary" class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-            Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla) para que la app revise su base de datos interna, tus registros guardados y los registros públicos en Canarias para indicar si es habitual, poco habitual, nueva para ti o si no suele darse en esa zona.
+            Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para que la app revise su base de datos interna, tus registros guardados y los registros públicos en Canarias para indicar si es habitual, poco habitual, nueva para ti o si activa alarma por invasora sin registros previos en la zona.
           </p>
           <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
             <a id="sci-link-biota" href="https://www.biodiversidadcanarias.es/biota/" target="_blank" rel="noopener" class="px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-semibold hover:underline">BIOTA Canarias ↗</a>
@@ -305,7 +324,7 @@
         <!-- Ubicación y Fecha -->
         <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
           <div class="flex items-center justify-between">
-               <h3 class="font-semibold text-xs uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <h3 class="font-semibold text-xs uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
               <i data-lucide="compass" class="w-4 h-4 text-emerald-600"></i> Ubicación y Fecha
             </h3>
             <button type="button" id="btn-gps" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1">
@@ -540,16 +559,6 @@
   </div>
 
   <script>
-    // ================= FIREBASE CONFIG PLACEHOLDER (PARA UNIR CUENTAS EN EL FUTURO) =================
-    const FIREBASE_CONFIG = {
-      apiKey: "",
-      authDomain: "",
-      projectId: "",
-      storageBucket: "",
-      messagingSenderId: "",
-      appId: ""
-    };
-
     // ================= BASE DE DATOS INTERNA DE ESPECIES CANARIAS =================
     const CANARY_DB = [
       {
@@ -590,7 +599,7 @@
       },
       {
         nombre_comun: 'Vieja canaria', nombre_cientifico: 'Sparisoma cretense', tipo: 'Animal', habitat: 'Marino', origen: 'Autóctona',
-            estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año',
+        estado: 'Preocupación menor (LC)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro', 'La Graciosa'], meses: 'Todo el año',
         curiosidad: 'Sus dientes están fusionados en forma de "pico de loro" para raspar algas de las rocas, produciendo arena fina.',
         clave: 'Hembras rojo brillante con mancha gris tras la cabeza y amarilla en la cola; machos grisáceos.',
         donde: 'Fondos rocosos costeros y sebadales de 1 a 40 m de profundidad.',
@@ -713,9 +722,46 @@
         donde: 'Fondos arenosos y mixtos costeros (5 a 100 m), frecuente en zonas de buceo.',
         dieta: 'Invertebrados bentónicos: cangrejos, camarones, gusanos y moluscos.',
         repro: 'Vivíparo aplacentario; las crías nacen ya formadas tras varios meses de gestación.'
+      },
+      {
+        nombre_comun: 'Rabo de gato', nombre_cientifico: 'Cenchrus setaceus', tipo: 'Planta', habitat: 'Terrestre', origen: 'Invasora',
+        estado: 'Invasora (Catálogo Español / RedEXOS)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro'], meses: 'Todo el año',
+        curiosidad: 'Gramínea invasora muy agresiva que desplaza la flora autóctona y aumenta el riesgo de incendio en laderas y barrancos.',
+        clave: 'Espigas plumosas alargadas de tono rosado o blanquecino y hojas estrechas ásperas en macollas densas.',
+        donde: 'Bordes de carreteras, barrancos, taludes y matorrales alterados.',
+        dieta: 'Fotosíntesis; gran producción de semillas dispersadas por el viento.',
+        repro: 'Floración casi continua en zonas cálidas de Canarias.'
+      },
+      {
+        nombre_comun: 'Culebra real de California', nombre_cientifico: 'Lampropeltis californiae', tipo: 'Animal', habitat: 'Terrestre', origen: 'Invasora',
+        estado: 'Invasora (Alerta temprana RedEXOS)', islas: ['Gran Canaria'], meses: 'Marzo a octubre (más activa)',
+        curiosidad: 'Depredador introducido que amenaza gravemente al lagarto gigante de Gran Canaria, a la lisa y al perenquén.',
+        clave: 'Serpiente constrictora de patrón anillado blanco/amarillo y negro o con línea dorsal clara (fase albina o rayada).',
+        donde: 'Barrancos, cultivos y zonas de matorral de Gran Canaria (cualquier avistamiento fuera debe notificarse de inmediato).',
+        dieta: 'Lagartos endémicos, perenquenes, lisas, micromamíferos y aves.',
+        repro: 'Ovípara; puesta de 5 a 12 huevos en primavera-verano.'
+      },
+      {
+        nombre_comun: 'Tunera india / Chumbera', nombre_cientifico: 'Opuntia maxima', tipo: 'Planta', habitat: 'Terrestre', origen: 'Invasora',
+        estado: 'Invasora (Catálogo Español)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote', 'La Palma', 'La Gomera', 'El Hierro'], meses: 'Todo el año',
+        curiosidad: 'Introducida históricamente para el cultivo de la cochinilla, hoy invade laderas de cardonal-tabaibal y barrancos.',
+        clave: 'Palas (cladodios) carnosas ovaladas con espinas y frutos anaranjados o rojizos (tunos).',
+        donde: 'Zonas bajas y medianías secas de todas las islas.',
+        dieta: 'Fotosíntesis CAM resistente a sequía.',
+        repro: 'Flores amarillas en primavera y reproducción vegetativa muy fácil por fragmentos de pala.'
+      },
+      {
+        nombre_comun: 'Cotorra de Kramer', nombre_cientifico: 'Psittacula krameri', tipo: 'Animal', habitat: 'Terrestre', origen: 'Invasora',
+        estado: 'Invasora (Catálogo Español)', islas: ['Tenerife', 'Gran Canaria', 'Fuerteventura', 'Lanzarote'], meses: 'Todo el año',
+        curiosidad: 'Compite por huecos de nidificación con aves autóctonas y causa daños en palmerales y cultivos.',
+        clave: 'Loro verde brillante de cola muy larga y pico rojo; el macho adulto presenta un collar negro y rosado.',
+        donde: 'Parques urbanos, palmerales y zonas agrícolas costeras.',
+        dieta: 'Frutos, semillas, brotes y flores.',
+        repro: 'Nidifica en cavidades de árboles y palmeras entre febrero y junio.'
       }
     ];
-          const ISLAND_COORDS = {
+
+    const ISLAND_COORDS = {
       'Tenerife': [28.2916, -16.6291],
       'Gran Canaria': [27.9202, -15.5474],
       'Fuerteventura': [28.3587, -14.0537],
@@ -893,7 +939,7 @@
       copyToClipboard(txt, 'Ficha de la especie copiada');
     });
 
-    // ================= CONSULTA POR NOMBRE CIENTÍFICO + BD + BUSCADOR =================
+    // ================= CONSULTA POR NOMBRE CIENTÍFICO + ALARMA INVASORAS =================
     function updateSearchLinks(sciRaw, commonRaw) {
       const query = encodeURIComponent((sciRaw || commonRaw || '').trim());
       document.getElementById('sci-link-biota').href = query
@@ -907,11 +953,54 @@
         : 'https://www.inaturalist.org/';
     }
 
+    function triggerInvasiveAlarm(speciesLabel, placeLabel, sciQuery) {
+      const banner = document.getElementById('invasive-alarm-banner');
+      const txt = document.getElementById('invasive-alarm-text');
+      const exosLink = document.getElementById('alarm-link-exos');
+      txt.innerHTML = `No existen indicios ni registros anteriores de <b>${escapeHtml(speciesLabel)}</b> en <b>${escapeHtml(placeLabel)}</b>. Al tratarse de una especie <b>invasora</b> no habitual en esta zona, conviene documentarla con foto/ubicación exacta y notificarla en RedEXOS.`;
+      exosLink.href = sciQuery
+        ? `https://www.biodiversidadcanarias.es/exos/especies?texto=${encodeURIComponent(sciQuery)}`
+        : 'https://www.biodiversidadcanarias.es/exos/';
+      banner.classList.remove('hidden');
+      lucide.createIcons();
+
+      if (navigator.vibrate) {
+        try { navigator.vibrate([250, 120, 250, 120, 400]); } catch {}
+      }
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          const ctx = new AudioCtx();
+          [0, 0.22, 0.44].forEach((offset, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = idx === 2 ? 880 : 660;
+            gain.gain.setValueAtTime(0.14, ctx.currentTime + offset);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.18);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + offset);
+            osc.stop(ctx.currentTime + offset + 0.19);
+          });
+        }
+      } catch {}
+    }
+
+    function hideInvasiveAlarm() {
+      document.getElementById('invasive-alarm-banner').classList.add('hidden');
+    }
+
+    document.getElementById('btn-dismiss-alarm').addEventListener('click', hideInvasiveAlarm);
+
     async function checkSpeciesByScientificName() {
       const sciInput = document.getElementById('inp-sci');
       const commonInput = document.getElementById('inp-common');
+      const originSelect = document.getElementById('inp-origin');
       const island = document.getElementById('inp-island').value;
       const zone = document.getElementById('inp-zone').value.trim();
+      const latVal = parseFloat(document.getElementById('inp-lat').value);
+      const lngVal = parseFloat(document.getElementById('inp-lng').value);
 
       const sci = sciInput.value.trim();
       const sciLower = sci.toLowerCase();
@@ -920,21 +1009,23 @@
       const badge = document.getElementById('sci-status-badge');
       const summary = document.getElementById('sci-check-summary');
 
-      if (!sci) {
+      if (!sci && originSelect.value !== 'Invasora') {
+        hideInvasiveAlarm();
         badge.textContent = 'Introduce un nombre científico';
-        summary.innerHTML = 'Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla) para que la app revise su base de datos interna, tus registros guardados y los registros públicos en Canarias.';
+        summary.innerHTML = 'Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para que la app revise su base de datos interna, tus registros guardados y los registros públicos en Canarias.';
         return;
       }
 
-      const dbMatch = CANARY_DB.find(item =>
+      const dbMatch = sciLower ? CANARY_DB.find(item =>
         item.nombre_cientifico.toLowerCase() === sciLower ||
         item.nombre_cientifico.toLowerCase().includes(sciLower)
-      );
+      ) : null;
 
-      const userMatches = records.filter(r =>
-        (r.nombre_cientifico || '').toLowerCase().includes(sciLower) ||
-        (sciLower.length >= 4 && (r.nombre_comun || '').toLowerCase().includes(sciLower))
-      );
+      const searchKey = sciLower || commonInput.value.trim().toLowerCase();
+      const userMatches = searchKey ? records.filter(r =>
+        (r.nombre_cientifico || '').toLowerCase().includes(searchKey) ||
+        (searchKey.length >= 4 && (r.nombre_comun || '').toLowerCase().includes(searchKey))
+      ) : [];
       const userInIsland = userMatches.filter(r => r.island === island);
       const userInZone = zone ? userInIsland.filter(r => (r.zone || '').toLowerCase().includes(zone.toLowerCase())) : [];
 
@@ -942,7 +1033,7 @@
         if (!commonInput.value.trim()) commonInput.value = dbMatch.nombre_comun;
         document.getElementById('inp-type').value = dbMatch.tipo;
         document.getElementById('inp-habitat').value = dbMatch.habitat;
-        document.getElementById('inp-origin').value = dbMatch.origen;
+        originSelect.value = dbMatch.origen;
         if (dbMatch.estado) {
           const selCons = document.getElementById('inp-conservation');
           const opt = Array.from(selCons.options).find(o => o.value.toLowerCase().includes(dbMatch.estado.split(' ')[0].toLowerCase()) || dbMatch.estado.toLowerCase().includes(o.value.toLowerCase()));
@@ -950,28 +1041,41 @@
         }
       }
 
+      const isInvasive = originSelect.value === 'Invasora' || (dbMatch && dbMatch.origen === 'Invasora');
       badge.textContent = 'Consultando...';
 
       let totalCanarias = null;
       let totalIsland = null;
-      try {
-        const qCanarias = `https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(sci)}&nelat=29.5&nelng=-13.2&swlat=27.5&swlng=-18.3&per_page=1`;
-        const rCan = await fetch(qCanarias);
-        if (rCan.ok) {
-          const dCan = await rCan.json();
-          totalCanarias = typeof dCan.total_results === 'number' ? dCan.total_results : null;
-        }
-
-        const coords = ISLAND_COORDS[island];
-        if (coords) {
-          const qIsl = `https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(sci)}&lat=${coords[0]}&lng=${coords[1]}&radius=45&per_page=1`;
-          const rIsl = await fetch(qIsl);
-          if (rIsl.ok) {
-            const dIsl = await rIsl.json();
-            totalIsland = typeof dIsl.total_results === 'number' ? dIsl.total_results : null;
+      let totalLocalZone = null;
+      if (sci) {
+        try {
+          const qCanarias = `https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(sci)}&nelat=29.5&nelng=-13.2&swlat=27.5&swlng=-18.3&per_page=1`;
+          const rCan = await fetch(qCanarias);
+          if (rCan.ok) {
+            const dCan = await rCan.json();
+            totalCanarias = typeof dCan.total_results === 'number' ? dCan.total_results : null;
           }
-        }
-      } catch {}
+
+          const coords = ISLAND_COORDS[island];
+          if (coords) {
+            const qIsl = `https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(sci)}&lat=${coords[0]}&lng=${coords[1]}&radius=45&per_page=1`;
+            const rIsl = await fetch(qIsl);
+            if (rIsl.ok) {
+              const dIsl = await rIsl.json();
+              totalIsland = typeof dIsl.total_results === 'number' ? dIsl.total_results : null;
+            }
+          }
+
+          if (!isNaN(latVal) && !isNaN(lngVal)) {
+            const qLoc = `https://api.inaturalist.org/v1/observations?taxon_name=${encodeURIComponent(sci)}&lat=${latVal}&lng=${lngVal}&radius=10&per_page=1`;
+            const rLoc = await fetch(qLoc);
+            if (rLoc.ok) {
+              const dLoc = await rLoc.json();
+              totalLocalZone = typeof dLoc.total_results === 'number' ? dLoc.total_results : null;
+            }
+          }
+        } catch {}
+      }
 
       let verdict = 'Sin clasificar';
       let notes = [];
@@ -979,11 +1083,11 @@
       if (dbMatch) {
         const inSelectedIsland = dbMatch.islas.includes(island);
         if (inSelectedIsland) {
-          verdict = `Habitual / Registrada en ${island}`;
-          notes.push(`Consta en la base de datos interna de Canarias como <b>${dbMatch.origen}</b> (${dbMatch.estado}) con presencia habitual en <b>${island}</b> (${dbMatch.islas.join(', ')}).`);
+          verdict = dbMatch.origen === 'Invasora' ? `⚠️ Invasora presente en ${island}` : `Habitual / Registrada en ${island}`;
+          notes.push(`Consta en la base de datos interna de Canarias como <b>${dbMatch.origen}</b> (${dbMatch.estado}) con presencia conocida en <b>${island}</b> (${dbMatch.islas.join(', ')}).`);
         } else {
-          verdict = `No habitual en ${island} (revisar ubicación)`;
-          notes.push(`Consta en la base de datos interna (<b>${dbMatch.origen}</b>), pero su distribución habitual indicada es <b>${dbMatch.islas.join(', ')}</b>, no en <b>${island}</b>.`);
+          verdict = dbMatch.origen === 'Invasora' ? `🚨 Invasora NO habitual en ${island}` : `No habitual en ${island} (revisar ubicación)`;
+          notes.push(`Consta en la base de datos interna (<b>${dbMatch.origen}</b>), pero su presencia conocida es en <b>${dbMatch.islas.join(', ')}</b>, no en <b>${island}</b>.`);
         }
       } else if (typeof totalIsland === 'number') {
         if (totalIsland >= 25) {
@@ -1003,7 +1107,7 @@
           notes.push(`No se encontraron observaciones públicas para <i>${escapeHtml(sci)}</i> en el buscador consultado.`);
         }
       } else {
-        verdict = 'Consulta en buscador externo';
+        verdict = isInvasive ? '⚠️ Especie invasora marcada' : 'Consulta en buscador externo';
         notes.push('Usa los enlaces de <b>BIOTA Canarias</b>, <b>RedEXOS</b> o <b>iNaturalist</b> de abajo para verificar su ficha oficial.');
       }
 
@@ -1021,10 +1125,25 @@
 
       badge.textContent = verdict;
       summary.innerHTML = notes.join(' ');
+
+      const hasPriorUserRecordInZone = zone ? userInZone.length > 0 : userInIsland.length > 0;
+      const hasPriorPublicRecordInZone = typeof totalLocalZone === 'number'
+        ? totalLocalZone > 0
+        : (typeof totalIsland === 'number' ? totalIsland > 0 : false);
+      const knownInIslandByDB = dbMatch ? dbMatch.islas.includes(island) : false;
+
+      if (isInvasive && !hasPriorUserRecordInZone && !hasPriorPublicRecordInZone && (!knownInIslandByDB || zone)) {
+        const label = commonInput.value.trim() || sci || 'Especie invasora';
+        const place = zone ? `${zone} (${island})` : island;
+        triggerInvasiveAlarm(label, place, sci || commonInput.value.trim());
+      } else {
+        hideInvasiveAlarm();
+      }
     }
 
     document.getElementById('btn-lookup-sci').addEventListener('click', checkSpeciesByScientificName);
     document.getElementById('inp-sci').addEventListener('change', checkSpeciesByScientificName);
+    document.getElementById('inp-origin').addEventListener('change', checkSpeciesByScientificName);
     document.getElementById('inp-sci').addEventListener('input', () => {
       updateSearchLinks(document.getElementById('inp-sci').value, document.getElementById('inp-common').value);
     });
@@ -1150,7 +1269,7 @@
       } else {
         audioEl.src = '';
         audioEl.classList.add('hidden');
-                emptyMsg.classList.remove('hidden');
+        emptyMsg.classList.remove('hidden');
         btnRm.classList.add('hidden');
       }
     }
@@ -1223,7 +1342,7 @@
         document.getElementById('inp-lat').value = c[0];
         document.getElementById('inp-lng').value = c[1];
       }
-      if (document.getElementById('inp-sci').value.trim()) {
+      if (document.getElementById('inp-sci').value.trim() || document.getElementById('inp-origin').value === 'Invasora') {
         checkSpeciesByScientificName();
       }
     });
@@ -1269,7 +1388,9 @@
         const niceName = addr.village || addr.town || addr.city || addr.suburb || addr.municipality || q;
         document.getElementById('inp-zone').value = niceName;
         showToast(`Ubicación fijada: ${niceName} (${detectedIsland})`);
-        if (document.getElementById('inp-sci').value.trim()) checkSpeciesByScientificName();
+        if (document.getElementById('inp-sci').value.trim() || document.getElementById('inp-origin').value === 'Invasora') {
+          checkSpeciesByScientificName();
+        }
       } catch {
         showToast('Error al buscar ubicación. Comprueba tu conexión.');
       }
@@ -1303,7 +1424,9 @@
           } catch {
             showToast(`GPS actualizado (${detectedIsland})`);
           }
-          if (document.getElementById('inp-sci').value.trim()) checkSpeciesByScientificName();
+          if (document.getElementById('inp-sci').value.trim() || document.getElementById('inp-origin').value === 'Invasora') {
+            checkSpeciesByScientificName();
+          }
         },
         (err) => {
           if (err.code === 1) showToast('Permiso de ubicación denegado.');
@@ -1330,8 +1453,9 @@
       showPhotoPreview(null);
       showAudioPreview(null);
       updateSearchLinks('', '');
+      hideInvasiveAlarm();
       document.getElementById('sci-status-badge').textContent = 'Introduce un nombre científico';
-      document.getElementById('sci-check-summary').innerHTML = 'Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla) para que la app revise su base de datos interna, tus registros guardados y los registros públicos en Canarias.';
+      document.getElementById('sci-check-summary').innerHTML = 'Escribe el nombre científico y pulsa <b>Consultar</b> (o cambia la isla/origen) para que la app revise su base de datos interna, tus registros guardados y los registros públicos en Canarias.';
       lucide.createIcons();
     }
 
@@ -1551,7 +1675,7 @@
     }
 
     function renderMapMarkers() {
-            if (!markersGroup) return;
+      if (!markersGroup) return;
       markersGroup.clearLayers();
       const filtered = records.filter(r => activeMapFilter === 'all' || r.origen === activeMapFilter);
       filtered.forEach(r => {
